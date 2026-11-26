@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>规划土地执法法律依据查询</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --bg: #f4f6f8;
+            --text: #202124;
+            --border: #dadce0;
+            --highlight: #d93025;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 10px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; height: 95vh; }
+        .header { background: var(--primary); color: #fff; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
+        .controls { padding: 15px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; background: #fafafa; }
+        .row { display: flex; gap: 10px; }
+        select, input, button { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 15px; outline: none; }
+        select, input { flex: 1; background: #fff; }
+        button { background: var(--primary); color: #fff; font-weight: bold; cursor: pointer; border: none; white-space: nowrap; transition: 0.2s; }
+        button:active { opacity: 0.8; }
+        button.copy-btn { background: #34a853; }
+        button.search-btn { width: 80px; }
+        .result-box { flex: 1; padding: 15px; overflow-y: auto; font-size: 15px; white-space: pre-wrap; word-wrap: break-word; }
+        .loading { text-align: center; color: #888; margin-top: 20px; }
+        mark { background-color: #ffe58f; color: var(--highlight); font-weight: bold; padding: 0 2px; border-radius: 2px; }
+        .case-title { color: #1a73e8; font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .meta { font-size: 13px; color: #666; margin-bottom: 10px; background: #f1f3f4; padding: 8px; border-radius: 4px; }
+        .quote-box { background: #e8f0fe; border-left: 4px solid var(--primary); padding: 10px; margin-top: 10px; font-size: 14px; }
+        .divider { height: 1px; background: var(--border); margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">规划土地执法法律依据查询</div>
+    
+    <div class="controls">
+        <div class="row">
+            <select id="situationSelect">
+                <option value="">请选择执法事项...</option>
+            </select>
+            <button onclick="querySituation()">查询情形</button>
+        </div>
+        <div class="row">
+            <input type="text" id="keywordInput" placeholder="搜法条或CSV政策(如:外墙)" onkeypress="handleKeyPress(event)">
+            <button class="search-btn" onclick="searchAll()">搜索</button>
+        </div>
+        <div class="row">
+            <button class="copy-btn" style="flex:1" onclick="copyResult()">📋 复制当前内容</button>
+        </div>
+    </div>
+
+    <div class="result-box" id="resultBox">
+        <div class="loading">正在初始化数据，请稍候...<br>正在尝试加载 laws.csv 政策库...</div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // 一、内置法条与业务数据 (对应 Python 版)
+    // ==========================================
+    const LEGAL_PROVISIONS = {
+        "城乡规划法第40条": {"law": "《中华人民共和国城乡规划法》", "article": "第四十条第一款", "content": "在城市、镇规划区内进行建筑物、构筑物、道路、管线和其他工程建设的，建设单位或者个人应当向城市、县人民政府城乡规划主管部门或者省、自治区、直辖市人民政府确定的镇人民政府申请办理建设工程规划许可证。"},
+        "城乡规划法第64条": {"law": "《中华人民共和国城乡规划法》", "article": "第六十四条", "content": "未取得建设工程规划许可证或者未按照建设工程规划许可证的规定进行建设的，由县级以上地方人民政府城乡规划主管部门责令停止建设；尚可采取改正措施消除对规划实施的影响的，限期改正，处建设工程造价百分之五以上百分之十以下的罚款；无法采取改正措施消除影响的，限期拆除，不能拆除的，没收实物或者违法收入，可以并处建设工程造价百分之十以下的罚款。"},
+        "行政处罚法第27条": {"law": "《中华人民共和国行政处罚法》", "article": "第二十七条", "content": "违法行为涉嫌犯罪的，行政机关应当及时将案件移送司法机关，依法追究刑事责任。对依法不需要追究刑事责任或者免予刑事处罚，但应当给予行政处罚的，司法机关应当及时将案件移送有关行政机关。"},
+        "行政处罚法第54条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十四条", "content": "除本法第五十一条规定的可以当场作出的行政处罚外，行政机关发现公民、法人或者其他组织有依法应当给予行政处罚的行为的，必须全面、客观、公正地调查，收集有关证据；必要时，依照法律、法规的规定，可以进行检查。符合立案标准的，行政机关应当及时立案。"},
+        "行政处罚法第55条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十五条", "content": "执法人员在调查或者进行检查时，应当主动向当事人或者有关人员出示执法证件。当事人或者有关人员有权要求执法人员出示执法证件。执法人员不出示执法证件的，当事人或者有关人员有权拒绝接受调查或者检查。"},
+        // ... 完整数据请根据你的实际需求，把 Python 里的 LEGAL_PROVISIONS 转成 JS 对象即可
+    };
+
+    // 模拟完整 30 项数据 (节选几个示例，你可以按同样格式补齐)
+    const SITUATIONS = {
+        "1-1": {"name": "对未取得建设工程规划许可证；未按建设工程规划许可证的规定进行建设的行政处罚", "type": "一、街道继续实施至2027年7月1日", "transition": "由街道办事处继续实施至2027年7月1日止。", "legal_sections": {"处罚理由": ["城乡规划法第40条"], "处罚依据": ["城乡规划法第64条"]}, "extra_sections": {"公告调查依据": ["广东省城乡规划条例第86条"], "移送依据": ["行政处罚法第27条"]}},
+        "2-5": {"name": "对未经批准在住宅室内装饰装修中搭建建筑物、构筑物，或擅自改变外立面的行政处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "legal_sections": {"处罚理由": ["住宅室内装饰装修管理办法第6条"], "处罚依据": ["城乡规划法第64条"]}, "extra_sections": {"公告调查依据": ["广东省城乡规划条例第86条"], "移送依据": ["行政处罚法第27条"]}},
+        "3-1": {"name": "对未经批准或者采取欺骗手段骗取批准，非法占用土地的行政处罚", "type": "三、须区分违法情形", "transition": "区局实施土地违法处罚。", "legal_sections": {"处罚理由": ["土地管理法第44条"], "处罚依据": ["土地管理法第77条"]}, "extra_sections": {"公告调查依据": ["（无法查明依据公告调查）"], "移送依据": ["行政处罚法第27条"]}}
+    };
+
+    let CSV_DATA = [];
+    let currentRawText = ""; // 用于复制
+
+    // ==========================================
+    // 二、初始化与加载
+    // ==========================================
+    window.onload = function() {
+        // 填充下拉框
+        const select = document.getElementById('situationSelect');
+        for (const [key, data] of Object.entries(SITUATIONS)) {
+            let opt = document.createElement('option');
+            opt.value = key;
+            opt.text = key + " | " + data.name.substring(0, 15) + "...";
+            select.appendChild(opt);
+        }
+        
+        // 加载 CSV
+        fetch('laws.csv')
+            .then(response => {
+                if (!response.ok) throw new Error("未找到 laws.csv");
+                return response.text();
+            })
+            .then(text => {
+                parseCSV(text);
+                updateResult(`✅ 系统初始化完成！\n已加载 ${Object.keys(SITUATIONS).length} 项内置情形。\n已成功加载 ${CSV_DATA.length} 条 CSV 政策法规数据。\n\n请在上方选择情形或输入关键词搜索。`);
+            })
+            .catch(err => {
+                updateResult(`⚠️ 系统初始化完成，但 CSV 加载失败。\n原因：${err.message} (请确保 laws.csv 与本网页在同一个目录下)\n\n你仍可以使用内置法条查询功能。`);
+            });
+    };
+
+    // 简易 CSV 解析器
+    function parseCSV(text) {
+        const lines = text.split('\n');
+        if (lines.length < 2) return;
+        
+        // 处理表头，去除可能的 \r 和空格
+        const headers = lines[0].split(',').map(h => h.trim().replace('\r', ''));
+        
+        // 寻找列索引
+        const idxName = headers.findIndex(h => h.includes('名称'));
+        const idxBody = headers.findIndex(h => h.includes('正文') || h.includes('内容'));
+        const idxNo = headers.findIndex(h => h.includes('文号'));
+        const idxUrl = headers.findIndex(h => h.includes('网址'));
+        const idxDate = headers.findIndex(h => h.includes('发布日期'));
+        
+        for (let i = 1; i < lines.length; i++) {
+            let line = lines[i].trim();
+            if (!line) continue;
+            // 极简分割（忽略引号内逗号的复杂情况，适用于绝大多数标准导出的CSV）
+            // 如果你的CSV包含很多逗号，建议在Excel中另存为 UTF-8 CSV
+            let cols = line.split(',');
+            let body = idxBody >= 0 ? cols[idxBody] : '';
+            if (!body) continue;
+            
+            CSV_DATA.push({
+                name: idxName >= 0 ? cols[idxName] : '',
+                body: body.replace(/<[^>]+>/g, ''), // 清洗HTML标签
+                docNo: idxNo >= 0 ? cols[idxNo] : '',
+                url: idxUrl >= 0 ? cols[idxUrl] : '',
+                date: idxDate >= 0 ? cols[idxDate] : ''
+            });
+        }
+    }
+
+    // ==========================================
+    // 三、核心业务逻辑
+    // ==========================================
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') searchAll();
+    }
+
+    // 获取法条
+    function getProvision(key) {
+        if (LEGAL_PROVISIONS[key]) return LEGAL_PROVISIONS[key];
+        return {"law": key, "article": "", "content": "（原文请使用搜索功能查法规库）"};
+    }
+
+    // 查询情形
+    function querySituation() {
+        const key = document.getElementById('situationSelect').value;
+        if (!key) {
+            updateResult("请先选择一个执法事项。");
+            return;
+        }
+        
+        const sit = SITUATIONS[key];
+        let text = `【情形编号】${key}\n【情形名称】${sit.name}\n【所属分类】${sit.type}\n【过渡期建议】${sit.transition}\n\n`;
+        
+        text += "【协助调查通知依据】\n  · 行政处罚法第54条\n  · 行政处罚法第55条\n\n";
+        
+        text += "【处罚理由】\n";
+        sit.legal_sections.处罚理由.forEach(k => {
+            let p = getProvision(k);
+            text += `  · ${p.law}${p.article}：${p.content}\n`;
+        });
+        text += "\n";
+        
+        text += "【处罚依据】\n";
+        sit.legal_sections.处罚依据.forEach(k => {
+            let p = getProvision(k);
+            text += `  · ${p.law}${p.article}：${p.content}\n`;
+        });
+        
+        updateResult(text);
+    }
+
+    // 搜索
+    function searchAll() {
+        const kw = document.getElementById('keywordInput').value.trim();
+        if (!kw) return;
+        
+        let results = [];
+        
+        // 1. 搜内置法条
+        for (const [k, v] of Object.entries(LEGAL_PROVISIONS)) {
+            if (k.includes(kw) || v.content.includes(kw)) {
+                results.push(`📄【内置法条】${v.law}${v.article}\n${v.content}\n`);
+            }
+        }
+        
+        // 2. 搜 CSV
+        CSV_DATA.forEach(row => {
+            if (row.name.includes(kw) || row.docNo.includes(kw) || row.body.includes(kw)) {
+                let text = "";
+                if (row.name) text += `名称：${row.name}\n`;
+                if (row.docNo) text += `文号：${row.docNo}\n`;
+                if (row.url) text += `网址：${row.url}\n`;
+                
+                // 提取上下文
+                let blocks = [];
+                const regex = new RegExp(`[^。！？；\\n]*${kw}[^。！？；\\n]*[。！？；]?`, 'g');
+                let match;
+                while ((match = regex.exec(row.body)) !== null) {
+                    blocks.push(match[0].trim());
+                }
+                blocks.forEach((b, i) => { text += `  ${i+1}. ${b}\n`; });
+                results.push(text + "\n");
+            }
+        });
+
+        if (results.length === 0) {
+            updateResult(`未找到包含「${kw}」的内容。`);
+            return;
+        }
+
+        let finalText = `【搜索关键词】${kw} (共匹配 ${results.length} 条)\n\n` + results.join('\n');
+        updateResult(finalText, kw); // 传入关键词进行高亮
+    }
+
+    // ==========================================
+    // 四、UI 更新与高亮复制
+    // ==========================================
+    function updateResult(text, highlightKw = "") {
+        currentRawText = text; // 保存纯文本用于复制
+        let htmlText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        
+        if (highlightKw) {
+            // 正则替换，全局忽略大小写高亮
+            const regex = new RegExp(highlightKw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            htmlText = htmlText.replace(regex, match => `<mark>${match}</mark>`);
+        }
+        
+        const box = document.getElementById('resultBox');
+        box.innerHTML = htmlText;
+        box.scrollTop = 0;
+    }
+
+    function copyResult() {
+        if (!currentRawText) return;
+        // 原生剪贴板 API
+        navigator.clipboard.writeText(currentRawText).then(() => {
+            alert("✅ 已复制到剪贴板！可直接粘贴到微信或 Word。");
+        }).catch(err => {
+            alert("复制失败，请长按文本手动选择复制。");
+        });
+    }
+</script>
+
+</body>
+</html>
