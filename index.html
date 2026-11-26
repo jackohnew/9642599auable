@@ -181,7 +181,6 @@ function parseCSV(text) {
 
 function getP(k){ return LP[k] || {l:k, a:"", c:"（该法规原文未内置，请使用上方搜索框检索政策库）"}; }
 
-// 【核心修复 1】按“第X条”切分完整段落
 function splitIntoSegments(text) {
     if (!text) return [];
     const regex = /第[零一二三四五六七八九十百千万\d]+条/g;
@@ -206,7 +205,7 @@ function extractContextBlocks(text, kw) {
     for (let seg of segs) {
         if (seg.includes(kw)) blocks.push(seg.trim());
     }
-    if (blocks.length === 0) { // 兜底：按句子切分
+    if (blocks.length === 0) {
         let parts = text.split(/[。！？；\n]/);
         for (let p of parts) {
             if (p.includes(kw)) blocks.push(p.trim());
@@ -215,7 +214,7 @@ function extractContextBlocks(text, kw) {
     return blocks;
 }
 
-// 【核心修复 2】查询情形时，自动联动 CSV 里的详尽裁量标准
+// 【核心修复】精准匹配裁量基准
 function querySituation() {
     const k = document.getElementById('situationSelect').value; if(!k) return updateResult("请选择执法事项");
     const s = SIT[k]; 
@@ -243,10 +242,9 @@ function querySituation() {
 
     if(s.es.m){ txt+="【移送依据】\n"; s.es.m.forEach(x=>{ let p=getP(x); if(!p.c.includes("未内置")) txt+=`  · ${p.l}${p.a}：${p.c}\n`; else txt+=`  · ${x}\n`; }); txt+="\n"; }
     
-    // 内置的简略版裁量
-    txt+="【裁量标准（简略版）】\n"; s.d.forEach(x=>{ let st=DS[x]; if(st){ txt+=`  ◆ ${st.n}\n`; st.c.forEach(cc=>{ txt+=`    ● ${cc.t}\n`; cc.i.forEach(ii=>{ txt+=`      - 情形：${ii.s} -> ${ii.st}\n`; }); }); } });
+    txt+="【裁量标准（简略版内置）】\n"; s.d.forEach(x=>{ let st=DS[x]; if(st){ txt+=`  ◆ ${st.n}\n`; st.c.forEach(cc=>{ txt+=`    ● ${cc.t}\n`; cc.i.forEach(ii=>{ txt+=`      - 情形：${ii.s} -> ${ii.st}\n`; }); }); } });
 
-    // 【核心】尝试从 CSV 中寻找该情形的详细裁量基准
+    // 【核心修复】：只抓取含有裁量基准的行，并且严格过滤
     let matchKws = [];
     if (s.n.includes("装饰装修")) matchKws = ["装饰装修", "外立面", "搭建"];
     else if (s.n.includes("未取得") || s.n.includes("未按")) matchKws = ["未取得建设工程规划许可证", "未按照建设工程规划许可证"];
@@ -257,10 +255,16 @@ function querySituation() {
 
     let csvHits = [];
     CSV_DATA.forEach(r => {
-        let allText = Object.values(r).join(" ");
-        if (matchKws.some(kw => allText.includes(kw))) {
+        // 将整行所有字段拼成字符串，方便检索
+        let rowStr = Object.values(r).join("||");
+        // 必须匹配到情形关键词
+        let hasKw = matchKws.some(kw => rowStr.includes(kw));
+        // 必须包含裁量相关信息（避免抓到整部法律）
+        let isDiscretion = rowStr.includes("裁量档次") || rowStr.includes("裁量基准") || rowStr.includes("违法情节");
+
+        if (hasKw && isDiscretion) {
             // 去重
-            if(!csvHits.some(hr => hr["名称"] === r["名称"] || hr["违法违规行为"] === r["违法违规行为"])) {
+            if(!csvHits.some(hr => hr["名称"] === r["名称"] && hr["违法违规行为"] === r["违法违规行为"])) {
                 csvHits.push(r);
             }
         }
@@ -268,12 +272,21 @@ function querySituation() {
 
     if (csvHits.length > 0) {
         txt += "\n【来自政策库的详尽裁量基准与情节】\n";
-        csvHits.slice(0, 3).forEach((r, idx) => { 
-            txt += `◆ 详细记录 ${idx+1}\n`;
+        csvHits.forEach((r, idx) => { 
+            txt += `\n◆ 详细记录 ${idx+1}\n`;
+            // 按用户电脑端格式输出关键列
+            if (r["序号"]) txt += `序号：${r["序号"]}\n`;
+            if (r["名称"]) txt += `来源：${r["名称"]}\n`;
+            if (r["发布日期"]) txt += `发布日期：${r["发布日期"]}\n`;
+            if (r["文号"]) txt += `文号：${r["文号"]}\n`;
+            if (r["网址"]) txt += `网址：${r["网址"]}\n`;
+            
             for (let key in r) {
                 let val = r[key];
                 if(!val || ["序号", "名称", "发布日期", "文号", "网址"].includes(key)) continue;
-                // 对长文本按“第X条”分段
+                // 过滤掉超长的整部法律正文
+                if (val.length > 3000) continue;
+                
                 if (val.length > 50 && val.includes("第") && val.includes("条")) {
                     let blocks = splitIntoSegments(val);
                     txt += `${key}：\n`;
@@ -282,26 +295,22 @@ function querySituation() {
                     txt += `${key}：${val}\n`;
                 }
             }
-            txt += "\n";
         });
     }
 
     updateResult(txt);
 }
 
-// 【核心修复 3】全面输出 CSV 的所有列
 function searchAll() {
     const kw = document.getElementById('keywordInput').value.trim(); if(!kw) return;
     let res = [];
     
-    // 1. 搜内置法条
     for(const k in LP){ 
         if(k.includes(kw) || LP[k].c.includes(kw)) {
             res.push(`📄【内置法条】${LP[k].l}${LP[k].a}\n${LP[k].c}\n`); 
         }
     }
     
-    // 2. 搜 CSV 数据库（只要某行命中，就把该行所有的数据完整列出来）
     CSV_DATA.forEach(r=>{
         let rowHit = false;
         let hitKeys = [];
@@ -314,9 +323,16 @@ function searchAll() {
         
         if(rowHit) {
             let text = "";
+            // 优先展示基础信息
+            if (r["序号"]) text += `序号：${r["序号"]}\n`;
+            if (r["名称"]) text += `名称：${r["名称"]}\n`;
+            if (r["发布日期"]) text += `发布日期：${r["发布日期"]}\n`;
+            if (r["文号"]) text += `文号：${r["文号"]}\n`;
+            if (r["网址"]) text += `网址：${r["网址"]}\n`;
+            
             for(let k in r) {
                 let val = r[k];
-                if(!val) continue;
+                if(!val || ["序号", "名称", "发布日期", "文号", "网址"].includes(k)) continue;
                 
                 if(hitKeys.includes(k) && val.length > 50) {
                     let blocks = extractContextBlocks(val, kw);
