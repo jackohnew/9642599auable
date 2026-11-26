@@ -15,6 +15,7 @@ from kivy.metrics import dp
 from kivy.core.text import LabelBase
 from kivy.clock import Clock
 from kivy.core.clipboard import Clipboard
+from kivy.resources import resource_find
 
 # ============================================================
 # 0. 自动加载手机系统中文字体
@@ -49,9 +50,7 @@ LEGAL_PROVISIONS = {
 # 二、30项完整情形底层数据
 # ============================================================
 RECYCLED_ITEMS = [
-    # 一、街道继续实施
     {"key": "1-1", "name": "对未取得建设工程规划许可证；未按建设工程规划许可证的规定进行建设的行政处罚", "type": "一、街道继续实施至2027年7月1日", "transition": "由街道办事处继续实施至2027年7月1日止。", "path": "街道实施行政处罚", "enforcement": "限期拆除自执；罚款申请法院", "discretion_keys": ["规划—未取得规划许可证"]},
-    # 二、处罚依据即未取得规划许可证
     {"key": "2-1", "name": "对质量安全且不严重影响城市规划的违法开发建设的违法建筑的处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "path": "区局处罚主体", "enforcement": "限期拆除自执；罚款申请法院", "discretion_keys": ["规划—未取得规划许可证"]},
     {"key": "2-2", "name": "对严重违反控制性详细规划的建筑物、构筑物的行政处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "path": "区局处罚主体", "enforcement": "限期拆除自执；罚款申请法院", "discretion_keys": ["规划—未取得规划许可证"]},
     {"key": "2-3", "name": "对未经批准在城市紫线范围内进行建设活动的行政处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "path": "区局处罚主体", "enforcement": "限期拆除自执", "discretion_keys": ["规划—未取得规划许可证"]},
@@ -59,11 +58,9 @@ RECYCLED_ITEMS = [
     {"key": "2-5", "name": "对未经批准在住宅室内装饰装修中搭建建筑物、构筑物，或擅自改变外立面的行政处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "path": "区局处罚主体", "enforcement": "限期拆除自执", "discretion_keys": ["规划—未取得规划许可证"]},
     {"key": "2-6", "name": "对未经批准在城市黄线范围内进行建设活动；擅自改变土地用途的行政处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "path": "区局处罚主体", "enforcement": "限期拆除自执", "discretion_keys": ["规划—未取得规划许可证"]},
     {"key": "2-7", "name": "对固定消纳场未按规定办理规划许可手续的行政处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "path": "区局处罚主体", "enforcement": "限期拆除自执", "discretion_keys": ["规划—未取得规划许可证"]},
-    # 三、须区分违法情形
     {"key": "3-1", "name": "对未经批准或者采取欺骗手段骗取批准，非法占用土地的行政处罚", "type": "三、须区分违法情形", "transition": "区局实施土地违法处罚，存在违建的街道协助。", "path": "区分处理", "enforcement": "限期拆除或申请法院", "discretion_keys": ["土地—非法占用土地"]},
     {"key": "3-2", "name": "对违法占用耕地建窑、建坟或擅自在耕地上建房等破坏种植条件的行政处罚", "type": "三、须区分违法情形", "transition": "区局实施土地违法处罚，存在违建的街道协助。", "path": "区分处理", "enforcement": "金钱给付申请法院", "discretion_keys": ["土地—破坏耕地种植条件"]},
     {"key": "3-3", "name": "对未经批准进行临时建设；未按批准内容进行临时建设；临时建筑超期不拆除的行政处罚", "type": "三、须区分违法情形", "transition": "无法取得合法手续的按未取得规划许可处罚，街道实施。", "path": "区分处理", "enforcement": "限期拆除自执", "discretion_keys": ["规划—临时建设"]},
-    # 四、区局作为处罚主体
     {"key": "4-1", "name": "对建设单位和使用单位违反城市地下空间规划及法定实施管理程序规定的行政处罚", "type": "四、区局处罚主体", "transition": "区局处罚主体，街道协助。", "path": "区局处罚", "enforcement": "限期拆除自执", "discretion_keys": ["规划—地下空间"]},
     {"key": "4-2", "name": "对土地复垦义务人未按规定补充编制土地复垦方案的行政处罚", "type": "四、区局处罚主体", "transition": "区局处罚主体，街道协助。", "path": "区局处罚", "enforcement": "罚款申请法院", "discretion_keys": ["土地—未补充编制复垦方案"]},
     {"key": "4-3", "name": "对个人未办理规划许可审批手续建设地下建筑物、构筑物的行政处罚", "type": "四、区局处罚主体", "transition": "区局处罚主体，街道协助。", "path": "区局处罚", "enforcement": "限期拆除自执", "discretion_keys": ["规划—地下空间"]},
@@ -141,7 +138,6 @@ DISCRETION_STANDARDS = {
     "土地—临时用地修永久建筑": {"name": "临时用地上修建永久性建筑（实施条例第52条）", "categories": [{"title": "按占地类型", "items": [{"scene": "占用建设用地", "standard": "责令限期拆除；按面积处复垦费5-6倍罚款"}, {"scene": "占用耕地", "standard": "责令限期拆除；按面积处复垦费8-10倍罚款"}]}]},
 }
 
-# 生成完整的 SITUATIONS 字典
 SITUATIONS = {}
 for item in RECYCLED_ITEMS:
     _k = item["key"]
@@ -160,29 +156,71 @@ DEFAULT_SECTIONS = {
 }
 
 # ============================================================
-# 三、CSV 搜索与报告生成逻辑
+# 三、增强版 CSV 加载与提取 (完美复刻 Windows 逻辑)
 # ============================================================
 CSV_DATA = []
 
 def load_bundled_csv():
+    """增强型加载：支持多编码、模糊列名识别、安卓打包路径"""
+    # 1. 定位文件
     target_file = "laws.csv"
     if not os.path.exists(target_file):
-        target_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "laws.csv")
-    if not os.path.exists(target_file): return 0
+        # 尝试在安卓内部打包路径找
+        found = resource_find("laws.csv")
+        if found:
+            target_file = found
+        else:
+            target_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "laws.csv")
+            
+    if not os.path.exists(target_file): return 0, "未找到 laws.csv 文件"
 
-    count = 0
-    try:
-        with open(target_file, "r", encoding="utf-8-sig", errors="ignore") as f:
-            reader = csv.DictReader(f)
-            if not reader.fieldnames: return 0
-            headers = {h.strip(): h for h in reader.fieldnames}
-            for row in reader:
-                clean_row = {k: row[v].strip() for k, v in headers.items() if row[v]}
-                if clean_row:
+    # 2. 多编码尝试
+    encodings = ['utf-8-sig', 'utf-8', 'gbk', 'gb18030']
+    for enc in encodings:
+        try:
+            with open(target_file, "r", encoding=enc, errors="ignore") as f:
+                reader = csv.DictReader(f)
+                if not reader.fieldnames: continue
+                
+                # 3. 智能识别列名（复刻 Windows 逻辑）
+                col_map = {}
+                for col in reader.fieldnames:
+                    col_clean = col.strip()
+                    if '序号' in col_clean: col_map['序号'] = col
+                    elif '网址' in col_clean: col_map['网址'] = col
+                    elif '原名称' in col_clean and '名称' not in col_map: col_map['名称'] = col
+                    elif col_clean == '名称' and '名称' not in col_map: col_map['名称'] = col
+                    elif '名称' in col_clean and '名称' not in col_map: col_map['名称'] = col
+                    elif '发布日期' in col_clean: col_map['发布日期'] = col
+                    elif '文号' in col_clean: col_map['文号'] = col
+                    elif '发布机构' in col_clean: col_map['发布机构'] = col
+                    elif '正文' in col_clean or '内容' in col_clean: col_map['正文'] = col
+                
+                if '正文' not in col_map:
+                    continue  # 如果没找到正文列，尝试下一种编码
+
+                count = 0
+                CSV_DATA.clear()
+                for row in reader:
+                    body = row.get(col_map['正文'], '').strip() if col_map.get('正文') else ''
+                    if not body: continue
+                    
+                    clean_row = {
+                        '名称': row.get(col_map.get('名称', ''), '').strip(),
+                        '文号': row.get(col_map.get('文号', ''), '').strip(),
+                        '发布日期': row.get(col_map.get('发布日期', ''), '').strip(),
+                        '发布机构': row.get(col_map.get('发布机构', ''), '').strip(),
+                        '网址': row.get(col_map.get('网址', ''), '').strip(),
+                        '正文': body
+                    }
                     CSV_DATA.append(clean_row)
                     count += 1
-    except Exception: pass
-    return count
+                return count, f"OK ({enc})"
+        except Exception as e:
+            print(f"CSV解析尝试 {enc} 失败:", e)
+            continue
+            
+    return 0, "文件存在，但解析失败，请检查表头是否包含'正文'"
 
 def get_provision(key):
     return LEGAL_PROVISIONS.get(key, {"law": key, "article": "", "content": "（原文请使用搜索功能查法规库）"})
@@ -234,28 +272,48 @@ def build_report_text(situation_key):
     return "\n".join(lines)
 
 def search_all(keyword):
+    """深度搜索：包含上下文截取，完美复刻电脑版体验"""
     kw = keyword.strip()
     if not kw: return "请输入关键词。"
     results = []
+    
+    # 1. 内置法条
     for k, v in LEGAL_PROVISIONS.items():
         if kw in k or kw in v['content']:
             results.append(f"【内置法条】{v['law']}{v['article']}\n{v['content']}\n")
             
+    # 2. CSV 政策库（带上下文截取）
     for row in CSV_DATA:
-        name = row.get('名称', row.get('标题', ''))
+        name = row.get('名称', '')
         doc_no = row.get('文号', '')
-        content = row.get('正文', row.get('内容', ''))
+        content = row.get('正文', '')
+        
         if kw in name or kw in doc_no or kw in content:
             snippet = ""
             if kw in content:
                 idx = content.find(kw)
-                snippet = "..." + content[max(0, idx-40):idx+60] + "..."
+                # 智能截取关键词前后的文本（类似 Windows 提取上下文）
+                start_idx = max(0, idx - 60)
+                end_idx = min(len(content), idx + 80)
+                snippet = content[start_idx:end_idx].replace('\n', ' ')
+                snippet = "..." + snippet + "..."
+            
             text = f"📄【{name}】\n"
             if doc_no: text += f"文号：{doc_no}\n"
-            if snippet: text += f"摘要：{snippet}\n"
+            if row.get('发布日期'): text += f"发布日期：{row['发布日期']}\n"
+            if row.get('发布机构'): text += f"发布机构：{row['发布机构']}\n"
+            if snippet: text += f"命中片段：{snippet}\n"
             results.append(text)
-    if not results: return f"未找到包含「{kw}」的法条或政策文件。"
-    return f"【搜索关键词】{kw} (共匹配 {len(results)} 条)\n\n" + "\n".join(results)
+            
+    if not results:
+        return f"未找到包含「{kw}」的法条或政策文件。"
+    
+    limit = 50
+    res_text = f"【搜索关键词】{kw} (共匹配 {len(results)} 条)\n\n"
+    res_text += "\n".join(results[:limit])
+    if len(results) > limit:
+        res_text += f"\n\n... (由于篇幅限制，仅显示前{limit}条)"
+    return res_text
 
 # ============================================================
 # 四、UI 界面
@@ -273,7 +331,7 @@ class MainScreen(BoxLayout):
         self.add_widget(row1)
 
         row2 = BoxLayout(size_hint_y=None, height=dp(48), spacing=dp(8))
-        self.search_input = TextInput(hint_text="搜法条或CSV政策(如:规划法)", multiline=False, foreground_color=(0, 0, 0, 1), background_color=(1, 1, 1, 1))
+        self.search_input = TextInput(hint_text="搜法条或CSV政策(如:外墙)", multiline=False, foreground_color=(0, 0, 0, 1), background_color=(1, 1, 1, 1))
         btn_search = Button(text="搜索", size_hint_x=None, width=dp(80), background_color=(0.2, 0.6, 1, 1))
         btn_search.bind(on_release=self.on_search)
         row2.add_widget(self.search_input)
@@ -288,7 +346,7 @@ class MainScreen(BoxLayout):
         self.add_widget(row3)
 
         self.scroll = ScrollView(size_hint=(1, 1))
-        self.result_label = Label(text="准备就绪...\n如果加载时间较长，正在读取CSV数据。", size_hint_y=None, markup=False, halign="left", valign="top", color=(0, 0, 0, 1))
+        self.result_label = Label(text="正在初始化数据，请稍候...", size_hint_y=None, markup=False, halign="left", valign="top", color=(0, 0, 0, 1))
         self.result_label.bind(texture_size=self._update_label_height)
         self.result_label.text_size = (Window.width - dp(40), None)
         Window.bind(size=self._on_window_size)
@@ -324,8 +382,9 @@ class LawApp(App):
     def build(self):
         Window.clearcolor = (0.95, 0.95, 0.95, 1)
         def init_load(dt):
-            count = load_bundled_csv()
-            self.root.show_text(f"系统初始化完成！\n已成功加载30项完整执法情形与 {count} 条 CSV 政策法规数据。\n请在上方选择情形或输入关键词搜索。")
+            count, status = load_bundled_csv()
+            msg = f"系统初始化完成！\n已加载 30 项执法情形。\nCSV数据加载状态：{status}\n共加载 {count} 条政策法规数据。\n\n如果CSV显示0条，请检查：\n1. laws.csv是否已上传到仓库。\n2. 表格是否包含“名称”、“正文”表头。"
+            self.root.show_text(msg)
         Clock.schedule_once(init_load, 0.5)
         return MainScreen()
 
