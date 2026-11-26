@@ -31,7 +31,7 @@ def load_chinese_font():
 load_chinese_font()
 
 # ============================================================
-# 一、法律依据核心库（全量补全，无省略号）
+# 一、法律依据核心库（全量无省略号）
 # ============================================================
 LEGAL_PROVISIONS = {
     "城乡规划法第40条": {"law": "《中华人民共和国城乡规划法》", "article": "第四十条第一款", "content": "在城市、镇规划区内进行建筑物、构筑物、道路、管线和其他工程建设的，建设单位或者个人应当向城市、县人民政府城乡规划主管部门或者省、自治区、直辖市人民政府确定的镇人民政府申请办理建设工程规划许可证。"},
@@ -55,14 +55,14 @@ LEGAL_PROVISIONS = {
     "行政强制法第25条": {"law": "《中华人民共和国行政强制法》", "article": "第二十五条", "content": "查封、扣押的期限不得超过三十日；情况复杂的，经行政机关负责人批准，可以延长，但是延长期限不得超过三十日。法律、行政法规另有规定的除外。"},
     "行政强制法第44条": {"law": "《中华人民共和国行政强制法》", "article": "第四十四条", "content": "对违法的建筑物、构筑物、设施等需要强制拆除的，应当由行政机关予以公告，限期当事人自行拆除。当事人在法定期限内不申请行政复议或者提起行政诉讼，又不拆除的，行政机关可以依法强制拆除。"},
     "行政强制法第53条": {"law": "《中华人民共和国行政强制法》", "article": "第五十三条", "content": "当事人在法定期限内不申请行政复议或者提起行政诉讼，又不履行行政决定的，没有行政强制执行权的行政机关可以自期限届满之日起三个月内，依照本章规定申请人民法院强制执行。"},
-    "特区条例第24条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第二十四条", "content": "在案件办理过程中，规划土地监察机构可以向当事人、证人发出调查询问通知书，通知当事人在规定期限内接受调查询问。"},
-    "特区条例第39条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第三十九条", "content": "对涉及规划违法行为或者土地违法行为的房地产，规划土地监察机构可以作出决定，限制其首次登记或者转移、抵押登记。"},
+    "特区条例第24条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第二十四条", "content": "在案件办理过程中，规划土地监察机构可以向当事人、证人发出调查询问通知书，通知当事人在规定期限内接受调查询问。监察人员可以询问案件当事人、证人，并制作笔录。笔录经核对无误后由监察人员和被询问人员分别签名或者盖章；被询问人拒绝签名或者盖章的，监察人员应当在笔录上予以注明。"},
+    "特区条例第39条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第三十九条", "content": "对涉及规划违法行为或者土地违法行为的房地产，规划土地监察机构可以作出决定，限制其首次登记或者转移、抵押登记。不动产登记机构收到规划土地监察机构限制房地产权利的决定后应当及时办理。违法状态消除或者当事人履行有关行政处罚决定后，规划土地监察机构应当作出决定，并及时通知不动产登记机构解除对有关房地产的权利限制。"},
     "特区条例第40条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十条", "content": "规划土地监察机构在查处违法行为过程中，对与违法行为有直接关系的场所、设施或者财物，可以依法实施查封、扣押等行政强制措施。"},
-    "特区条例第43条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十三条", "content": "查封、扣押的期限不得超过三十日；情况复杂的，经规划土地监察机构负责人批准，可以延长，但是延长期限不得超过三十日。"},
-    "特区条例第44条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十四条", "content": "当事人对行政处罚决定逾期不履行的，规划土地监察机构应当依法催告当事人履行义务。经催告，当事人仍不履行，且未在法定期限内申请行政复议或者提起行政诉讼的，依照下列方式分别处理..."},
-    "广东省听证办法第6条": {"law": "《广东省行政处罚听证程序实施办法》", "article": "第六条", "content": "行政机关作出下列行政处罚决定之前，应当告知当事人有要求举行听证的权利..."},
-    "广东省听证办法第7条": {"law": "《广东省行政处罚听证程序实施办法》", "article": "第七条", "content": "第六条所称较大数额罚款、较大数额违法所得、较大价值非法财物，是指对公民的违法行为处以5000元以上罚款，对法人或者其他组织的违法行为处以10万元以上罚款。"},
-    "广东省城乡规划条例第86条": {"law": "《广东省城乡规划条例》", "article": "第八十六条第一款", "content": "违反本条例规定，未依法取得有关规划许可证的在建或者建成项目，对无法确定建设单位或者个人的，城市、县人民政府城乡规划主管部门应当在报纸等公共媒体和违法建设项目现场予以公告..."}
+    "特区条例第43条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十三条", "content": "查封、扣押的期限不得超过三十日；情况复杂的，经规划土地监察机构负责人批准，可以延长，但是延长期限不得超过三十日。法律、行政法规另有规定的除外。"},
+    "特区条例第44条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十四条", "content": "当事人对行政处罚决定逾期不履行的，规划土地监察机构应当依法催告当事人履行义务。经催告，当事人仍不履行，且未在法定期限内申请行政复议或者提起行政诉讼的，按照下列方式分别处理：（一）依照城市规划法律、法规、规章作出的限期拆除行政处罚，由违法建筑物、构筑物、设施所在区的规划土地监察机构作出行政强制执行决定予以拆除；依照土地管理法律、法规、规章作出的限期拆除行政处罚，由作出处罚决定的规划土地监察机构申请人民法院强制执行。（二）其他行政处罚，由作出处罚决定的规划土地监察机构申请人民法院强制执行。规划土地监察机构应当在申请行政复议的法定期限或者提起行政诉讼的法定期限届满之日起三个月内申请人民法院强制执行；当事人对行政处罚决定提起行政复议或者行政诉讼的，规划土地监察机构应当在行政复议决定或者人民法院裁判文书生效之日起三个月内申请人民法院强制执行。"},
+    "广东省听证办法第6条": {"law": "《广东省行政处罚听证程序实施办法》", "article": "第六条", "content": "行政机关作出下列行政处罚决定之前，应当告知当事人有要求举行听证的权利；当事人要求听证的，行政机关应当组织听证：（一）较大数额罚款；（二）没收较大数额违法所得、没收较大价值非法财物；（三）降低资质等级、吊销许可证件；（四）责令停产停业、责令关闭、限制从业；（五）其他较重的行政处罚；（六）法律、法规、规章规定的其他情形。"},
+    "广东省听证办法第7条": {"law": "《广东省行政处罚听证程序实施办法》", "article": "第七条", "content": "第六条所称较大数额罚款、较大数额违法所得、较大价值非法财物，是指对公民的违法行为处以5000元以上罚款（等价值违法所得或者非法财物），对法人或者其他组织的违法行为处以10万元以上罚款（等价值违法所得或者非法财物）。部门规章对前款规定的数额有更低规定的，从其规定。"},
+    "广东省城乡规划条例第86条": {"law": "《广东省城乡规划条例》", "article": "第八十六条第一款", "content": "违反本条例规定，未依法取得有关规划许可证的在建或者建成项目，对无法确定建设单位或者个人的，城市、县人民政府城乡规划主管部门应当在报纸等公共媒体和违法建设项目现场予以公告，告知建设单位或者个人依法接受处理，公告期限不少于三十日。无法确定建设单位或者个人的违法建设项目不及时拆除可能影响安全、交通等的，可以在向公证机关办理证据保全手续后予以强制拆除。"}
 }
 
 # ============================================================
@@ -313,28 +313,41 @@ def query_situation_text(key):
                     
     # 【核心联动】：去CSV里把详尽的裁量基准、违法情节挖出来
     sit_name = sit["name"]
-    match_kws = []
-    if "装饰装修" in sit_name: match_kws = ["装饰装修", "外立面", "搭建"]
-    elif "未取得" in sit_name or "未按" in sit_name: match_kws = ["未取得建设工程规划许可证", "未按照建设工程规划许可证"]
-    elif "非法占用" in sit_name: match_kws = ["非法占用土地"]
-    elif "临时用地" in sit_name: match_kws = ["临时用地"]
-    elif "复垦" in sit_name: match_kws = ["复垦"]
-    else: match_kws = [sit_name[:6]]
-    
+    search_terms = []
+    if "未取得" in sit_name or "未按" in sit_name:
+        search_terms = ["未取得建设工程规划许可证", "未按照建设工程规划许可证", "未取得规划许可证", "未按照规划许可证"]
+    elif "装饰装修" in sit_name: search_terms = ["装饰装修", "外立面"]
+    elif "非法占用" in sit_name: search_terms = ["非法占用土地"]
+    elif "临时用地" in sit_name: search_terms = ["临时用地"]
+    elif "复垦" in sit_name: search_terms = ["复垦"]
+    elif "买卖" in sit_name or "转让" in sit_name: search_terms = ["买卖", "非法转让"]
+    else: search_terms = [sit_name[:6]]
+
     hit_rows = []
     for r in CSV_DATA:
-        r_text = "".join([str(v) for v in r.values()])
-        if any(kw in r_text for kw in match_kws):
-            if not any(hr.get("名称") == r.get("名称") and hr.get("违法违规行为") == r.get("违法违规行为") for hr in hit_rows):
-                hit_rows.append(r)
+        row_text = "".join([str(v) for v in r.values()])
+        if any(term in row_text for term in search_terms):
+            # 加上这个判断，确保抓取到的是裁量基准表里的数据，而不是整部法规原文
+            if "裁量基准" in row_text or "违法情节" in row_text or "裁量档次" in row_text:
+                # 简单去重
+                if not any(hr.get("序号") == r.get("序号") and hr.get("违法违规行为") == r.get("违法违规行为") for hr in hit_rows):
+                    hit_rows.append(r)
             
     if hit_rows:
-        lines.append("\n【裁量标准与违法情节（来自政策库详表）】")
-        for i, r in enumerate(hit_rows[:3]):
+        lines.append("\n【来自政策库的详尽裁量基准与情节】")
+        for i, r in enumerate(hit_rows[:5]): # 最多抓5条详表
             lines.append(f"◆ 详细记录 {i+1}")
+            if r.get("序号"): lines.append(f"序号：{r['序号']}")
+            if r.get("名称"): lines.append(f"来源：{r['名称']}")
+            if r.get("发布日期"): lines.append(f"发布日期：{r['发布日期']}")
+            if r.get("文号"): lines.append(f"文号：{r['文号']}")
+            if r.get("网址"): lines.append(f"网址：{r['网址']}")
+            
             for k, v in r.items():
                 if k in ["序号", "名称", "发布日期", "文号", "网址"]: continue
                 if not v: continue
+                if len(v) > 3000: continue # 过滤过长的法律原文
+                
                 if len(v) > 50 and "第" in v and "条" in v:
                     blocks = splitIntoSegments(v)
                     lines.append(f"  {k}：")
@@ -351,16 +364,24 @@ def search_all_text(keyword):
     if not kw: return "请输入关键词。"
     raw_results = []
     
-    for k, v in LEGAL_PROVISIONS.items():
-        if kw in k or kw in v['content']:
-            raw_results.append(f"📄【内置法条】{v['law']}{v['article']}\n{v['content']}\n")
-            
+    # 1. 搜 CSV 数据库 (优先展示详细数据)
     for row in CSV_DATA:
         row_text = "".join([str(v) for v in row.values()])
         if kw in row_text:
             text = ""
+            # 优先展示元数据
+            if row.get("序号"): text += f"序号：{row['序号']}\n"
+            if row.get("名称"): text += f"名称：{row['名称']}\n"
+            if row.get("发布日期"): text += f"发布日期：{row['发布日期']}\n"
+            if row.get("文号"): text += f"文号：{row['文号']}\n"
+            if row.get("网址"): text += f"网址：{row['网址']}\n"
+            
+            # 遍历其他列
             for k, v in row.items():
+                if k in ["序号", "名称", "发布日期", "文号", "网址"]: continue
                 if not v: continue
+                
+                # 命中的长文本进行切段
                 if kw in v and len(v) > 50:
                     blocks = extractContextBlocks(v, kw)
                     if blocks:
@@ -372,6 +393,11 @@ def search_all_text(keyword):
                     text += f"{k}：{v}\n"
             raw_results.append(text + "\n")
 
+    # 2. 搜内置法条
+    for k, v in LEGAL_PROVISIONS.items():
+        if kw in k or kw in v['content']:
+            raw_results.append(f"📄【内置法条】{v['law']}{v['article']}\n{v['content']}\n")
+
     if not raw_results:
         return f"未找到包含「{kw}」的内容。"
         
@@ -380,7 +406,7 @@ def search_all_text(keyword):
     return final_text
 
 # ============================================================
-# 五、UI 界面 (纯 TextInput，绝对稳定)
+# 五、UI 界面
 # ============================================================
 class MainScreen(BoxLayout):
     def __init__(self, **kwargs):
@@ -409,12 +435,14 @@ class MainScreen(BoxLayout):
         row3.add_widget(b2)
         self.add_widget(row3)
 
+        # 使用 TextInput 显示，支持手指滑动
         self.result_display = TextInput(
             text="正在初始化数据...",
             readonly=True,
+            multiline=True,
             foreground_color=(0, 0, 0, 1),
             background_color=(1, 1, 1, 1),
-            font_size=dp(15),
+            font_size=dp(14), # 稍微调小字号，一屏显示更多
             size_hint=(1, 1)
         )
         self.add_widget(self.result_display)
