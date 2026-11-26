@@ -1,262 +1,176 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>规划土地执法法律依据查询</title>
-    <style>
-        :root {
-            --primary: #1a73e8;
-            --bg: #f4f6f8;
-            --text: #202124;
-            --border: #dadce0;
-            --highlight: #d93025;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 10px; line-height: 1.6; }
-        .container { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; height: 95vh; }
-        .header { background: var(--primary); color: #fff; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; }
-        .controls { padding: 15px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; background: #fafafa; }
-        .row { display: flex; gap: 10px; }
-        select, input, button { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 15px; outline: none; }
-        select, input { flex: 1; background: #fff; }
-        button { background: var(--primary); color: #fff; font-weight: bold; cursor: pointer; border: none; white-space: nowrap; transition: 0.2s; }
-        button:active { opacity: 0.8; }
-        button.copy-btn { background: #34a853; }
-        button.search-btn { width: 80px; }
-        .result-box { flex: 1; padding: 15px; overflow-y: auto; font-size: 15px; white-space: pre-wrap; word-wrap: break-word; }
-        .loading { text-align: center; color: #888; margin-top: 20px; }
-        mark { background-color: #ffe58f; color: var(--highlight); font-weight: bold; padding: 0 2px; border-radius: 2px; }
-        .case-title { color: #1a73e8; font-weight: bold; font-size: 16px; margin-bottom: 5px; }
-        .meta { font-size: 13px; color: #666; margin-bottom: 10px; background: #f1f3f4; padding: 8px; border-radius: 4px; }
-        .quote-box { background: #e8f0fe; border-left: 4px solid var(--primary); padding: 10px; margin-top: 10px; font-size: 14px; }
-        .divider { height: 1px; background: var(--border); margin: 15px 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>规划土地执法法律依据查询</title>
+<style>
+:root{--primary:#1a73e8;--bg:#f4f6f8;--text:#202124;--border:#dadce0;--highlight:#d93025}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{background:var(--bg);color:var(--text);padding:10px;line-height:1.6}
+.container{max-width:900px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.05);overflow:hidden;display:flex;flex-direction:column;height:95vh}
+.header{background:var(--primary);color:#fff;padding:15px;text-align:center;font-size:18px;font-weight:bold}
+.controls{padding:15px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:12px;background:#fafafa}
+.row{display:flex;gap:10px}
+select,input,button{padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:15px;outline:none}
+select,input{flex:1;background:#fff}
+button{background:var(--primary);color:#fff;font-weight:bold;cursor:pointer;border:none;transition:.2s}
+button:active{opacity:.8}
+button.copy-btn{background:#34a853}
+.result-box{flex:1;padding:15px;overflow-y:auto;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
+.loading{text-align:center;color:#888;margin-top:20px}
+mark{background-color:#ffe58f;color:var(--highlight);font-weight:bold;padding:0 2px;border-radius:2px}
+</style>
 </head>
 <body>
-
 <div class="container">
-    <div class="header">规划土地执法法律依据查询</div>
-    
-    <div class="controls">
-        <div class="row">
-            <select id="situationSelect">
-                <option value="">请选择执法事项...</option>
-            </select>
-            <button onclick="querySituation()">查询情形</button>
-        </div>
-        <div class="row">
-            <input type="text" id="keywordInput" placeholder="搜法条或CSV政策(如:外墙)" onkeypress="handleKeyPress(event)">
-            <button class="search-btn" onclick="searchAll()">搜索</button>
-        </div>
-        <div class="row">
-            <button class="copy-btn" style="flex:1" onclick="copyResult()">📋 复制当前内容</button>
-        </div>
-    </div>
-
-    <div class="result-box" id="resultBox">
-        <div class="loading">正在初始化数据，请稍候...<br>正在尝试加载 laws.csv 政策库...</div>
-    </div>
+<div class="header">规划土地执法法律依据查询</div>
+<div class="controls">
+<div class="row">
+<select id="situationSelect"><option value="">请选择执法事项...</option></select>
+<button onclick="querySituation()">查询情形</button>
+</div>
+<div class="row">
+<input type="text" id="keywordInput" placeholder="搜法条或CSV政策(如:外墙)" onkeypress="if(event.key==='Enter')searchAll()">
+<button onclick="searchAll()">搜索</button>
+</div>
+<div class="row">
+<button class="copy-btn" style="flex:1" onclick="copyResult()">📋 复制当前内容</button>
+</div>
+</div>
+<div class="result-box" id="resultBox"><div class="loading">正在初始化数据...</div></div>
 </div>
 
 <script>
-    // ==========================================
-    // 一、内置法条与业务数据 (对应 Python 版)
-    // ==========================================
-    const LEGAL_PROVISIONS = {
-        "城乡规划法第40条": {"law": "《中华人民共和国城乡规划法》", "article": "第四十条第一款", "content": "在城市、镇规划区内进行建筑物、构筑物、道路、管线和其他工程建设的，建设单位或者个人应当向城市、县人民政府城乡规划主管部门或者省、自治区、直辖市人民政府确定的镇人民政府申请办理建设工程规划许可证。"},
-        "城乡规划法第64条": {"law": "《中华人民共和国城乡规划法》", "article": "第六十四条", "content": "未取得建设工程规划许可证或者未按照建设工程规划许可证的规定进行建设的，由县级以上地方人民政府城乡规划主管部门责令停止建设；尚可采取改正措施消除对规划实施的影响的，限期改正，处建设工程造价百分之五以上百分之十以下的罚款；无法采取改正措施消除影响的，限期拆除，不能拆除的，没收实物或者违法收入，可以并处建设工程造价百分之十以下的罚款。"},
-        "行政处罚法第27条": {"law": "《中华人民共和国行政处罚法》", "article": "第二十七条", "content": "违法行为涉嫌犯罪的，行政机关应当及时将案件移送司法机关，依法追究刑事责任。对依法不需要追究刑事责任或者免予刑事处罚，但应当给予行政处罚的，司法机关应当及时将案件移送有关行政机关。"},
-        "行政处罚法第54条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十四条", "content": "除本法第五十一条规定的可以当场作出的行政处罚外，行政机关发现公民、法人或者其他组织有依法应当给予行政处罚的行为的，必须全面、客观、公正地调查，收集有关证据；必要时，依照法律、法规的规定，可以进行检查。符合立案标准的，行政机关应当及时立案。"},
-        "行政处罚法第55条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十五条", "content": "执法人员在调查或者进行检查时，应当主动向当事人或者有关人员出示执法证件。当事人或者有关人员有权要求执法人员出示执法证件。执法人员不出示执法证件的，当事人或者有关人员有权拒绝接受调查或者检查。"},
-        // ... 完整数据请根据你的实际需求，把 Python 里的 LEGAL_PROVISIONS 转成 JS 对象即可
-    };
+// ================= 数据区 =================
+const LP = {
+"城乡规划法第40条": {l: "《中华人民共和国城乡规划法》", a: "第四十条第一款", c: "在城市、镇规划区内进行建筑物、构筑物、道路、管线和其他工程建设的，建设单位或者个人应当向城市、县人民政府城乡规划主管部门或者省、自治区、直辖市人民政府确定的镇人民政府申请办理建设工程规划许可证。"},
+"城乡规划法第64条": {l: "《中华人民共和国城乡规划法》", a: "第六十四条", c: "未取得建设工程规划许可证或者未按照建设工程规划许可证的规定进行建设的，由县级以上地方人民政府城乡规划主管部门责令停止建设；尚可采取改正措施消除对规划实施的影响的，限期改正，处建设工程造价百分之五以上百分之十以下的罚款；无法采取改正措施消除影响的，限期拆除，不能拆除的，没收实物或者违法收入，可以并处建设工程造价百分之十以下的罚款。"},
+"城乡规划法第66条": {l: "《中华人民共和国城乡规划法》", a: "第六十六条", c: "建设单位或者个人有下列行为之一的，由所在地城市、县人民政府城乡规划主管部门责令限期拆除，可以并处临时建设工程造价一倍以下的罚款：（一）未经批准进行临时建设的；（二）未按照批准内容进行临时建设的；（三）临时建筑物、构筑物超过批准期限不拆除的。"},
+"土地管理法第77条": {l: "《中华人民共和国土地管理法》", a: "第七十七条", c: "未经批准或者采取欺骗手段骗取批准，非法占用土地的，由县级以上人民政府自然资源主管部门责令退还非法占用的土地，对违反土地利用总体规划擅自将农用地改为建设用地的，限期拆除在非法占用的土地上新建的建筑物和其他设施，恢复土地原状，对符合土地利用总体规划的，没收在非法占用的土地上新建的建筑物和其他设施，可以并处罚款；构成犯罪的，依法追究刑事责任。"},
+"土地管理法第75条": {l: "《中华人民共和国土地管理法》", a: "第七十五条", c: "违反本法规定，占用耕地建窑、建坟或者擅自在耕地上建房、挖砂、采石、采矿、取土等，破坏种植条件的，或者因开发土地造成土地荒漠化、盐渍化的，由县级以上人民政府自然资源主管部门、农业农村主管部门等按照职责责令限期改正或者治理，可以并处罚款；构成犯罪的，依法追究刑事责任。"},
+"行政处罚法第27条": {l: "《中华人民共和国行政处罚法》", a: "第二十七条", c: "违法行为涉嫌犯罪的，行政机关应当及时将案件移送司法机关，依法追究刑事责任。"},
+"行政处罚法第54条": {l: "《中华人民共和国行政处罚法》", a: "第五十四条", c: "除本法第五十一条规定的可以当场作出的行政处罚外，行政机关发现公民、法人或者其他组织有依法应当给予行政处罚的行为的，必须全面、客观、公正地调查，收集有关证据；必要时，依照法律、法规的规定，可以进行检查。"},
+"行政处罚法第55条": {l: "《中华人民共和国行政处罚法》", a: "第五十五条", c: "执法人员在调查或者进行检查时，应当主动向当事人或者有关人员出示执法证件。当事人或者有关人员有权要求执法人员出示执法证件。执法人员不出示执法证件的，当事人或者有关人员有权拒绝接受调查或者检查。"},
+"行政处罚法第57条": {l: "《中华人民共和国行政处罚法》", a: "第五十七条", c: "调查终结，行政机关负责人应当对调查结果进行审查，根据不同情况，分别作出如下决定：（一）确有应受行政处罚的违法行为的，根据情节轻重及具体情况，作出行政处罚决定；（二）违法行为轻微，依法可以不予行政处罚的，不予行政处罚；（三）违法事实不能成立的，不予行政处罚；（四）违法行为涉嫌犯罪的，移送司法机关。"},
+"行政处罚法第63条": {l: "《中华人民共和国行政处罚法》", a: "第六十三条", c: "行政机关拟作出下列行政处罚决定，应当告知当事人有要求听证的权利，当事人要求听证的，行政机关应当组织听证。"},
+"行政强制法第22条": {l: "《中华人民共和国行政强制法》", a: "第二十二条", c: "查封、扣押应当由法律、法规规定的行政机关实施，其他任何行政机关或者组织不得实施。"},
+"行政强制法第24条": {l: "《中华人民共和国行政强制法》", a: "第二十四条", c: "行政机关决定实施查封、扣押的，应当履行本法第十八条规定的程序，制作并当场交付查封、扣押决定书和清单。"},
+"行政强制法第25条": {l: "《中华人民共和国行政强制法》", a: "第二十五条", c: "查封、扣押的期限不得超过三十日；情况复杂的，经行政机关负责人批准，可以延长，但是延长期限不得超过三十日。"},
+"特区条例第24条": {l: "《深圳经济特区规划土地监察条例》", a: "第二十四条", c: "在案件办理过程中，规划土地监察机构可以向当事人、证人发出调查询问通知书，通知当事人在规定期限内接受调查询问。"},
+"特区条例第39条": {l: "《深圳经济特区规划土地监察条例》", a: "第三十九条", c: "对涉及规划违法行为或者土地违法行为的房地产，规划土地监察机构可以作出决定，限制其首次登记或者转移、抵押登记。"},
+"特区条例第40条": {l: "《深圳经济特区规划土地监察条例》", a: "第四十条", c: "规划土地监察机构在查处违法行为过程中，对与违法行为有直接关系的场所、设施或者财物，可以依法实施查封、扣押等行政强制措施。"},
+"特区条例第43条": {l: "《深圳经济特区规划土地监察条例》", a: "第四十三条", c: "查封、扣押的期限不得超过三十日；情况复杂的，经规划土地监察机构负责人批准，可以延长，但是延长期限不得超过三十日。"},
+"广东省城乡规划条例第86条": {l: "《广东省城乡规划条例》", a: "第八十六条第一款", c: "违反本条例规定，未依法取得有关规划许可证的在建或者建成项目，对无法确定建设单位或者个人的，城市、县人民政府城乡规划主管部门应当在报纸等公共媒体和违法建设项目现场予以公告，告知建设单位或者个人依法接受处理，公告期限不少于三十日。"}
+};
 
-    // 模拟完整 30 项数据 (节选几个示例，你可以按同样格式补齐)
-    const SITUATIONS = {
-        "1-1": {"name": "对未取得建设工程规划许可证；未按建设工程规划许可证的规定进行建设的行政处罚", "type": "一、街道继续实施至2027年7月1日", "transition": "由街道办事处继续实施至2027年7月1日止。", "legal_sections": {"处罚理由": ["城乡规划法第40条"], "处罚依据": ["城乡规划法第64条"]}, "extra_sections": {"公告调查依据": ["广东省城乡规划条例第86条"], "移送依据": ["行政处罚法第27条"]}},
-        "2-5": {"name": "对未经批准在住宅室内装饰装修中搭建建筑物、构筑物，或擅自改变外立面的行政处罚", "type": "二、处罚依据即“未取得...”", "transition": "区局处罚主体，街道协助。", "legal_sections": {"处罚理由": ["住宅室内装饰装修管理办法第6条"], "处罚依据": ["城乡规划法第64条"]}, "extra_sections": {"公告调查依据": ["广东省城乡规划条例第86条"], "移送依据": ["行政处罚法第27条"]}},
-        "3-1": {"name": "对未经批准或者采取欺骗手段骗取批准，非法占用土地的行政处罚", "type": "三、须区分违法情形", "transition": "区局实施土地违法处罚。", "legal_sections": {"处罚理由": ["土地管理法第44条"], "处罚依据": ["土地管理法第77条"]}, "extra_sections": {"公告调查依据": ["（无法查明依据公告调查）"], "移送依据": ["行政处罚法第27条"]}}
-    };
+const SIT = {
+"1-1":{n:"对未取得建设工程规划许可证；未按建设工程规划许可证的规定进行建设的行政处罚",t:"一、街道继续实施至2027年7月1日",tr:"由街道办事处继续实施至2027年7月1日止。",d:["规划—未取得规划许可证"],ls:{r:["城乡规划法第40条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"2-1":{n:"对质量安全且不严重影响城市规划的违法开发建设的违法建筑的处罚",t:"二、处罚依据即“未取得...”",tr:"区局处罚主体，街道协助。",d:["规划—未取得规划许可证"],ls:{r:["城乡规划法第40条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"2-2":{n:"对严重违反控制性详细规划的建筑物、构筑物的行政处罚",t:"二、处罚依据即“未取得...”",tr:"区局处罚主体，街道协助。",d:["规划—未取得规划许可证"],ls:{r:["城乡规划法第40条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"2-3":{n:"对未经批准在城市紫线范围内进行建设活动的行政处罚",t:"二、处罚依据即“未取得...”",tr:"区局处罚主体，街道协助。",d:["规划—未取得规划许可证"],ls:{r:["城市紫线管理办法第2条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"2-4":{n:"对在城市蓝线范围内进行各类建设活动的行政处罚",t:"二、处罚依据即“未取得...”",tr:"区局处罚主体，街道协助。",d:["规划—未取得规划许可证"],ls:{r:["城市蓝线管理办法第10条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"2-5":{n:"对未经批准在住宅室内装饰装修中搭建建筑物、构筑物，或擅自改变外立面的行政处罚",t:"二、处罚依据即“未取得...”",tr:"区局处罚主体，街道协助。",d:["规划—未取得规划许可证"],ls:{r:["住宅室内装饰装修管理办法第6条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"2-6":{n:"对未经批准在城市黄线范围内进行建设活动；擅自改变土地用途的行政处罚",t:"二、处罚依据即“未取得...”",tr:"区局处罚主体，街道协助。",d:["规划—未取得规划许可证"],ls:{r:["城市黄线管理办法第2条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"2-7":{n:"对固定消纳场未按规定办理规划许可手续的行政处罚",t:"二、处罚依据即“未取得...”",tr:"区局处罚主体，街道协助。",d:["规划—未取得规划许可证"],ls:{r:["深圳市建筑废弃物管理办法第31条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"3-1":{n:"对未经批准或者采取欺骗手段骗取批准，非法占用土地的行政处罚",t:"三、须区分违法情形",tr:"区局实施土地违法处罚，存在违建的街道协助。",d:["土地—非法占用土地"],ls:{r:["土地管理法第44条"],p:["土地管理法第77条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条","刑法第342条"]}},
+"3-2":{n:"对违法占用耕地建窑、建坟或擅自在耕地上建房等破坏种植条件的行政处罚",t:"三、须区分违法情形",tr:"区局实施土地违法处罚，存在违建的街道协助。",d:["土地—破坏耕地种植条件"],ls:{r:["土地管理法第37条"],p:["土地管理法第75条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条","刑法第342条"]}},
+"3-3":{n:"对未经批准进行临时建设；未按批准内容进行临时建设；临时建筑超期不拆除的行政处罚",t:"三、须区分违法情形",tr:"无法取得合法手续的按未取得规划许可处罚，街道实施。",d:["规划—临时建设"],ls:{r:["城乡规划法第40条","城乡规划法第44条"],p:["城乡规划法第64条","城乡规划法第66条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-1":{n:"对建设单位和使用单位违反城市地下空间规划及法定实施管理程序规定的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["规划—地下空间"],ls:{r:["城市地下空间开发利用管理规定第30条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-2":{n:"对土地复垦义务人未按规定补充编制土地复垦方案的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—未补充编制复垦方案"],ls:{r:["土地复垦条例第13条"],p:["土地复垦条例第37条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-3":{n:"对个人未办理规划许可审批手续建设地下建筑物、构筑物的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["规划—地下空间"],ls:{r:["城市地下空间开发利用管理规定第30条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-4":{n:"对在土地利用总体规划制定前已建的不符合规划用途的建筑物重建、扩建的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—规划前已建建筑物重建扩建"],ls:{r:["土地管理法第65条"],p:["土地管理法实施条例第53条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-5":{n:"对土地复垦义务人未按规定报告土地损毁等情况的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—未报告复垦情况"],ls:{r:["土地复垦条例第17条"],p:["土地复垦条例第41条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-6":{n:"对在临时用地上修建永久性建筑物、构筑物的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—临时用地修永久建筑"],ls:{r:["土地管理法第57条"],p:["土地管理法实施条例第52条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-7":{n:"对土地复垦义务人拒绝、阻碍监督检查或弄虚作假的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—拒绝监督检查"],ls:{r:["土地复垦条例第8条"],p:["土地复垦条例第43条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-8":{n:"对破坏或者擅自改变基本农田保护区标志的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—基本农田标志"],ls:{r:["基本农田保护条例第11条"],p:["基本农田保护条例第32条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-9":{n:"对依法收回国有土地使用权当事人拒不交出土地，临时使用土地期满拒不归还的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—拒不交还土地"],ls:{r:["土地管理法第56条"],p:["土地管理法第81条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-10":{n:"对买卖或者以其他形式非法转让土地的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—买卖或非法转让"],ls:{r:["（《土地管理法》第七十四条已含定性）"],p:["土地管理法第74条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条","刑法第228条"]}},
+"4-11":{n:"对土地复垦义务人未按规定将土地复垦费用列入生产成本的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—复垦费用未列入成本"],ls:{r:["土地复垦条例第15条"],p:["土地复垦条例第38条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-12":{n:"对土地复垦义务人未按规定对拟损毁的耕地等进行表土剥离的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—未表土剥离"],ls:{r:["土地复垦条例第16条"],p:["土地复垦条例第39条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-13":{n:"对拒不履行土地复垦义务的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—拒不履行复垦义务"],ls:{r:["土地管理法第43条"],p:["土地管理法第76条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-14":{n:"对非法占用已完成征转地补偿手续的国有土地，建筑物使用功能不违反规划的处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["法定—历史遗留违建没收"],ls:{r:["（深圳历史遗留违建处理决定已含情形）"],p:["深圳历史遗留违法建筑处理决定第10条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-15":{n:"对建设项目施工和地质勘查临时占用耕地，逾期不恢复种植条件的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—临时用地期满未复垦"],ls:{r:["土地管理法第43条"],p:["土地管理法第76条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-16":{n:"对建设单位未办理规划许可审批手续建设地下建筑物、构筑物的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["规划—地下空间"],ls:{r:["城市地下空间开发利用管理规定第30条"],p:["城乡规划法第64条"]},es:{a:["广东省城乡规划条例第86条"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-17":{n:"对土地复垦义务人应当缴纳土地复垦费而不缴纳的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—应缴复垦费不缴"],ls:{r:["土地复垦条例第18条"],p:["土地复垦条例第42条"]},es:{a:["（义务人已在册，可直接送达；确无法送达的，参照《广东省城乡规划条例》第八十六条）"],m:["行政处罚法第27条","行政处罚法第57条"]}},
+"4-18":{n:"对违法在土地利用总体规划确定的禁止开垦区内进行开垦的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—禁止开垦区开发"],ls:{r:["土地管理法实施条例第9条"],p:["土地管理法实施条例第57条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条","刑法第342条"]}},
+"4-19":{n:"对擅自将农民集体所有土地使用权出让、转让或出租用于非农业建设的行政处罚",t:"四、区局处罚主体",tr:"区局处罚主体，街道协助。",d:["土地—集体土地擅自用于非农"],ls:{r:["土地管理法第63条"],p:["土地管理法第82条"]},es:{a:["（无法查明的，依据《广东省城乡规划条例》第八十六条适用公告调查）"],m:["行政处罚法第27条","行政处罚法第57条","刑法第228条"]}}
+};
 
-    let CSV_DATA = [];
-    let currentRawText = ""; // 用于复制
+const DS = {
+"规划—未取得规划许可证":{n:"未取得建设工程规划许可证或未按许可证规定进行建设（《城乡规划法》第64条）",c:[{t:"一、尚可采取改正措施",i:[{s:"超面积≤5% 或超高度≤5%",st:"责令停止建设、限期改正；并处建设工程造价5%的罚款"},{s:"超面积5%-10%",st:"责令停止建设、限期改正；并处建设工程造价7.5%的罚款"}]},{t:"二、无法采取改正措施",i:[{s:"违反强制性技术规定或侵占公共用地",st:"责令停止建设；限期拆除；不能拆除的，没收实物，可并处10%以下罚款"}]}]},
+"规划—临时建设":{n:"未经批准/未按内容临时建设/超期不拆（第66条）",c:[{t:"情节较重",i:[{s:"影响规划实施或超期3个月以上",st:"责令限期拆除；可并处临时造价1倍罚款"}]}]},
+"规划—地下空间":{n:"违法建设地下建筑物/擅改地下空间",c:[{t:"按危害后果",i:[{s:"造成安全隐患",st:"责令停止建设，限期改正，并处造价7.5%罚款"},{s:"造成他人人身财产损失",st:"责令停止建设，限期改正，并处造价10%罚款"}]}]},
+"土地—破坏耕地种植条件":{n:"违法占用耕地破坏种植条件（第75条）",c:[{t:"按破坏面积",i:[{s:"破坏永久基本农田以外的耕地5亩以下",st:"责令限期改正或治理；可并处耕地开垦费5倍罚款"},{s:"破坏永久基本农田5亩以上",st:"责令限期改正或治理；可并处耕地开垦费8-10倍罚款"}]}]},
+"土地—非法占用土地":{n:"非法占用土地（第77条）",c:[{t:"按占地类型",i:[{s:"占用建设用地",st:"责令退还；可并处100-300元/平米罚款"},{s:"占用永久基本农田",st:"责令退还，限期拆除新建建筑物；可并处800-1000元/平米罚款"}]}]},
+"土地—拒不交还土地":{n:"拒不交还土地/期满不归还（第81条）",c:[{t:"按面积",i:[{s:"不涉及永久基本农田面积不足10亩",st:"责令交还；处100-300元/平米罚款"},{s:"涉及永久基本农田5亩以上",st:"责令交还；处300-500元/平米罚款"}]}]},
+"土地—买卖或非法转让":{n:"买卖或以其他形式非法转让土地（第74条）",c:[{t:"按违法所得",i:[{s:"违法所得30万元以下",st:"没收违法所得；可并处10%-20%罚款"},{s:"违法所得50万元以上",st:"没收违法所得；可并处40%-50%罚款"}]}]},
+"土地—临时用地修永久建筑":{n:"临时用地上修建永久性建筑（第52条）",c:[{t:"按占地类型",i:[{s:"占用建设用地",st:"责令限期拆除；按面积处复垦费5-6倍罚款"},{s:"占用耕地",st:"责令限期拆除；按面积处复垦费8-10倍罚款"}]}]}
+};
 
-    // ==========================================
-    // 二、初始化与加载
-    // ==========================================
-    window.onload = function() {
-        // 填充下拉框
-        const select = document.getElementById('situationSelect');
-        for (const [key, data] of Object.entries(SITUATIONS)) {
-            let opt = document.createElement('option');
-            opt.value = key;
-            opt.text = key + " | " + data.name.substring(0, 15) + "...";
-            select.appendChild(opt);
+const DEF_SEC = {"协助调查通知依据":["行政处罚法第54条","行政处罚法第55条"]};
+let CSV_DATA = [], currentRaw = "";
+
+// ================= 逻辑区 =================
+window.onload = function() {
+    const s = document.getElementById('situationSelect');
+    for(const k in SIT) { let o = document.createElement('option'); o.value=k; o.text=k+" | "+SIT[k].n.substring(0,15)+"..."; s.appendChild(o); }
+    fetch('laws.csv').then(r => r.ok ? r.text() : Promise.reject('未找到laws.csv')).then(t => { parseCSV(t); updateResult(`✅ 初始化完成！已加载 ${Object.keys(SIT).length} 项完整情形，${CSV_DATA.length} 条CSV。`); }).catch(e => updateResult(`⚠️ 加载完成，但CSV失败：${e}\n你仍可使用内置法条查询。`));
+};
+
+function parseCSV(t) {
+    const l = t.split('\n'); if(l.length < 2) return;
+    const h = l[0].split(',').map(x=>x.trim().replace('\r',''));
+    const iN=h.findIndex(x=>x.includes('名称')), iB=h.findIndex(x=>x.includes('正文')||x.includes('内容')), iU=h.findIndex(x=>x.includes('网址')), iM=h.findIndex(x=>x.includes('文号')), iD=h.findIndex(x=>x.includes('发布日期')), iI=h.findIndex(x=>x.includes('序号'));
+    for(let i=1;i<l.length;i++){ let c=l[i].split(','); if(!c[iB]) continue; CSV_DATA.push({ id: iI>=0?c[iI]:'', name: iN>=0?c[iN]:'', body: c[iB].replace(/<[^>]+>/g,''), url: iU>=0?c[iU]:'', no: iM>=0?c[iM]:'', date: iD>=0?c[iD]:'' }); }
+}
+
+function getP(k){ return LP[k] || {l:k,a:"",c:"（原文请使用搜索功能查）"}; }
+
+function querySituation() {
+    const k = document.getElementById('situationSelect').value; if(!k) return updateResult("请选择执法事项");
+    const s = SIT[k]; let txt = `【情形编号】${k}\n【情形名称】${s.n}\n【所属分类】${s.t}\n【过渡期建议】${s.tr}\n\n`;
+    
+    if(s.es.a){ txt+="【公告调查依据】\n"; s.es.a.forEach(x=>{ if(x.startsWith("（")) txt+=`  ${x}\n`; else { let p=getP(x); txt+=`  · ${p.l}${p.a}：${p.c}\n`; }}); txt+="\n"; }
+    
+    txt+="【协助调查通知依据】\n"; DEF_SEC["协助调查通知依据"].forEach(x=>{ let p=getP(x); txt+=`  · ${p.l}${p.a}：${p.c}\n`; }); txt+="\n";
+    
+    txt+="【处罚理由】\n"; s.ls.r.forEach(x=>{ if(x.startsWith("（")) txt+=`  ${x}\n`; else { let p=getP(x); txt+=`  · ${p.l}${p.a}：${p.c}\n`; }}); txt+="\n";
+    
+    txt+="【处罚依据】\n"; s.ls.p.forEach(x=>{ let p=getP(x); txt+=`  · ${p.l}${p.a}：${p.c}\n`; }); txt+="\n";
+    
+    if(s.es.m){ txt+="【移送依据】\n"; s.es.m.forEach(x=>{ let p=getP(x); if(p.c!=="（原文请使用搜索功能查）") txt+=`  · ${p.l}${p.a}：${p.c}\n`; else txt+=`  · ${x}\n`; }); txt+="\n"; }
+    
+    txt+="【裁量标准】\n"; s.d.forEach(x=>{ let st=DS[x]; if(st){ txt+=`  ◆ ${st.n}\n`; st.c.forEach(cc=>{ txt+=`    ● ${cc.t}\n`; cc.i.forEach(ii=>{ txt+=`      - 情形：${ii.s} -> ${ii.st}\n`; }); }); } });
+    updateResult(txt);
+}
+
+function searchAll() {
+    const kw = document.getElementById('keywordInput').value.trim(); if(!kw) return;
+    let res = [];
+    for(const k in LP){ if(k.includes(kw) || LP[k].c.includes(kw)) res.push(`📄【内置法条】${LP[k].l}${LP[k].a}\n${LP[k].c}\n`); }
+    CSV_DATA.forEach(r=>{
+        if(r.name.includes(kw) || r.no.includes(kw) || r.body.includes(kw)){
+            let t=`${r.id?'序号：'+r.id+'　':''}${r.name?'名称：'+r.name+'　':''}${r.no?'文号：'+r.no+'　':''}${r.date?'发布日期：'+r.date+'\n':''}${r.url?'网址：'+r.url+'\n':''}`;
+            if(r.body.includes(kw)){ const reg=new RegExp(`[^。！？；\\n]*${kw}[^。！？；\\n]*[。！？；]?`,'g'); let m; while((m=reg.exec(r.body))!==null) t+=`  ${m[0].trim()}\n`; }
+            res.push(t+'\n');
         }
-        
-        // 加载 CSV
-        fetch('laws.csv')
-            .then(response => {
-                if (!response.ok) throw new Error("未找到 laws.csv");
-                return response.text();
-            })
-            .then(text => {
-                parseCSV(text);
-                updateResult(`✅ 系统初始化完成！\n已加载 ${Object.keys(SITUATIONS).length} 项内置情形。\n已成功加载 ${CSV_DATA.length} 条 CSV 政策法规数据。\n\n请在上方选择情形或输入关键词搜索。`);
-            })
-            .catch(err => {
-                updateResult(`⚠️ 系统初始化完成，但 CSV 加载失败。\n原因：${err.message} (请确保 laws.csv 与本网页在同一个目录下)\n\n你仍可以使用内置法条查询功能。`);
-            });
-    };
+    });
+    if(!res.length) return updateResult(`未找到包含「${kw}」的内容。`);
+    updateResult(`【搜索关键词】${kw} (共匹配 ${res.length} 条)\n\n`+res.slice(0,50).join('\n'), kw);
+}
 
-    // 简易 CSV 解析器
-    function parseCSV(text) {
-        const lines = text.split('\n');
-        if (lines.length < 2) return;
-        
-        // 处理表头，去除可能的 \r 和空格
-        const headers = lines[0].split(',').map(h => h.trim().replace('\r', ''));
-        
-        // 寻找列索引
-        const idxName = headers.findIndex(h => h.includes('名称'));
-        const idxBody = headers.findIndex(h => h.includes('正文') || h.includes('内容'));
-        const idxNo = headers.findIndex(h => h.includes('文号'));
-        const idxUrl = headers.findIndex(h => h.includes('网址'));
-        const idxDate = headers.findIndex(h => h.includes('发布日期'));
-        
-        for (let i = 1; i < lines.length; i++) {
-            let line = lines[i].trim();
-            if (!line) continue;
-            // 极简分割（忽略引号内逗号的复杂情况，适用于绝大多数标准导出的CSV）
-            // 如果你的CSV包含很多逗号，建议在Excel中另存为 UTF-8 CSV
-            let cols = line.split(',');
-            let body = idxBody >= 0 ? cols[idxBody] : '';
-            if (!body) continue;
-            
-            CSV_DATA.push({
-                name: idxName >= 0 ? cols[idxName] : '',
-                body: body.replace(/<[^>]+>/g, ''), // 清洗HTML标签
-                docNo: idxNo >= 0 ? cols[idxNo] : '',
-                url: idxUrl >= 0 ? cols[idxUrl] : '',
-                date: idxDate >= 0 ? cols[idxDate] : ''
-            });
-        }
-    }
+function updateResult(txt, kw="") {
+    currentRaw = txt;
+    let h = txt.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    if(kw){ const r = new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'); h = h.replace(r, m=>`<mark>${m}</mark>`); }
+    const b = document.getElementById('resultBox'); b.innerHTML = h; b.scrollTop = 0;
+}
 
-    // ==========================================
-    // 三、核心业务逻辑
-    // ==========================================
-    function handleKeyPress(e) {
-        if (e.key === 'Enter') searchAll();
-    }
-
-    // 获取法条
-    function getProvision(key) {
-        if (LEGAL_PROVISIONS[key]) return LEGAL_PROVISIONS[key];
-        return {"law": key, "article": "", "content": "（原文请使用搜索功能查法规库）"};
-    }
-
-    // 查询情形
-    function querySituation() {
-        const key = document.getElementById('situationSelect').value;
-        if (!key) {
-            updateResult("请先选择一个执法事项。");
-            return;
-        }
-        
-        const sit = SITUATIONS[key];
-        let text = `【情形编号】${key}\n【情形名称】${sit.name}\n【所属分类】${sit.type}\n【过渡期建议】${sit.transition}\n\n`;
-        
-        text += "【协助调查通知依据】\n  · 行政处罚法第54条\n  · 行政处罚法第55条\n\n";
-        
-        text += "【处罚理由】\n";
-        sit.legal_sections.处罚理由.forEach(k => {
-            let p = getProvision(k);
-            text += `  · ${p.law}${p.article}：${p.content}\n`;
-        });
-        text += "\n";
-        
-        text += "【处罚依据】\n";
-        sit.legal_sections.处罚依据.forEach(k => {
-            let p = getProvision(k);
-            text += `  · ${p.law}${p.article}：${p.content}\n`;
-        });
-        
-        updateResult(text);
-    }
-
-    // 搜索
-    function searchAll() {
-        const kw = document.getElementById('keywordInput').value.trim();
-        if (!kw) return;
-        
-        let results = [];
-        
-        // 1. 搜内置法条
-        for (const [k, v] of Object.entries(LEGAL_PROVISIONS)) {
-            if (k.includes(kw) || v.content.includes(kw)) {
-                results.push(`📄【内置法条】${v.law}${v.article}\n${v.content}\n`);
-            }
-        }
-        
-        // 2. 搜 CSV
-        CSV_DATA.forEach(row => {
-            if (row.name.includes(kw) || row.docNo.includes(kw) || row.body.includes(kw)) {
-                let text = "";
-                if (row.name) text += `名称：${row.name}\n`;
-                if (row.docNo) text += `文号：${row.docNo}\n`;
-                if (row.url) text += `网址：${row.url}\n`;
-                
-                // 提取上下文
-                let blocks = [];
-                const regex = new RegExp(`[^。！？；\\n]*${kw}[^。！？；\\n]*[。！？；]?`, 'g');
-                let match;
-                while ((match = regex.exec(row.body)) !== null) {
-                    blocks.push(match[0].trim());
-                }
-                blocks.forEach((b, i) => { text += `  ${i+1}. ${b}\n`; });
-                results.push(text + "\n");
-            }
-        });
-
-        if (results.length === 0) {
-            updateResult(`未找到包含「${kw}」的内容。`);
-            return;
-        }
-
-        let finalText = `【搜索关键词】${kw} (共匹配 ${results.length} 条)\n\n` + results.join('\n');
-        updateResult(finalText, kw); // 传入关键词进行高亮
-    }
-
-    // ==========================================
-    // 四、UI 更新与高亮复制
-    // ==========================================
-    function updateResult(text, highlightKw = "") {
-        currentRawText = text; // 保存纯文本用于复制
-        let htmlText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        
-        if (highlightKw) {
-            // 正则替换，全局忽略大小写高亮
-            const regex = new RegExp(highlightKw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-            htmlText = htmlText.replace(regex, match => `<mark>${match}</mark>`);
-        }
-        
-        const box = document.getElementById('resultBox');
-        box.innerHTML = htmlText;
-        box.scrollTop = 0;
-    }
-
-    function copyResult() {
-        if (!currentRawText) return;
-        // 原生剪贴板 API
-        navigator.clipboard.writeText(currentRawText).then(() => {
-            alert("✅ 已复制到剪贴板！可直接粘贴到微信或 Word。");
-        }).catch(err => {
-            alert("复制失败，请长按文本手动选择复制。");
-        });
-    }
+function copyResult() {
+    if(!currentRaw) return;
+    navigator.clipboard.writeText(currentRaw).then(()=>{ alert("✅ 已复制！可直接粘贴。"); }).catch(()=>{ alert("请长按文本手动复制。"); });
+}
 </script>
-
 </body>
 </html>
