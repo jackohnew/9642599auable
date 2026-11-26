@@ -8,7 +8,6 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.spinner import Spinner
-from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
 from kivy.utils import platform
 from kivy.metrics import dp
@@ -32,35 +31,42 @@ def load_chinese_font():
 load_chinese_font()
 
 # ============================================================
-# 一、法律依据核心库（补全蓝线、紫线、室内装修等）
+# 一、法律依据核心库（全量补全，无省略号）
 # ============================================================
 LEGAL_PROVISIONS = {
     "城乡规划法第40条": {"law": "《中华人民共和国城乡规划法》", "article": "第四十条第一款", "content": "在城市、镇规划区内进行建筑物、构筑物、道路、管线和其他工程建设的，建设单位或者个人应当向城市、县人民政府城乡规划主管部门或者省、自治区、直辖市人民政府确定的镇人民政府申请办理建设工程规划许可证。"},
     "城乡规划法第64条": {"law": "《中华人民共和国城乡规划法》", "article": "第六十四条", "content": "未取得建设工程规划许可证或者未按照建设工程规划许可证的规定进行建设的，由县级以上地方人民政府城乡规划主管部门责令停止建设；尚可采取改正措施消除对规划实施的影响的，限期改正，处建设工程造价百分之五以上百分之十以下的罚款；无法采取改正措施消除影响的，限期拆除，不能拆除的，没收实物或者违法收入，可以并处建设工程造价百分之十以下的罚款。"},
     "城乡规划法第66条": {"law": "《中华人民共和国城乡规划法》", "article": "第六十六条", "content": "建设单位或者个人有下列行为之一的，由所在地城市、县人民政府城乡规划主管部门责令限期拆除，可以并处临时建设工程造价一倍以下的罚款：（一）未经批准进行临时建设的；（二）未按照批准内容进行临时建设的；（三）临时建筑物、构筑物超过批准期限不拆除的。"},
     "城市蓝线管理办法第10条": {"law": "《城市蓝线管理办法》", "article": "第十条", "content": "在城市蓝线内禁止进行下列活动：（一）违反城市蓝线保护和控制要求的建设活动；（二）擅自填埋、占用城市蓝线内水域；（三）影响水系安全的爆破、采石、取土；（四）擅自建设各类排污设施；（五）其它对城市水系保护构成破坏的活动。"},
-    "城市紫线管理办法第2条": {"law": "《城市紫线管理办法》", "article": "第二条", "content": "本办法所称城市紫线，是指国家历史文化名城内的历史文化街区和省、自治区、直辖市人民政府公布的历史文化街区的保护范围界线..."},
+    "城市紫线管理办法第2条": {"law": "《城市紫线管理办法》", "article": "第二条", "content": "本办法所称城市紫线，是指国家历史文化名城内的历史文化街区和省、自治区、直辖市人民政府公布的历史文化街区的保护范围界线，以及历史文化街区外经县级以上人民政府公布保护的历史建筑的保护范围界线。"},
     "城市黄线管理办法第2条": {"law": "《城市黄线管理办法》", "article": "第二条", "content": "本办法所称城市黄线，是指对城市发展全局有影响的、城市规划中确定的、必须控制的城市基础设施用地的控制界线。"},
     "住宅室内装饰装修管理办法第6条": {"law": "《住宅室内装饰装修管理办法》", "article": "第六条", "content": "装修人从事住宅室内装饰装修活动，未经批准，不得有下列行为：（一）搭建建筑物、构筑物；（二）改变住宅外立面，在非承重外墙上开门、窗；（三）拆改供暖管道和设施；（四）拆改燃气管道和设施。本条所列第（一）项、第（二）项行为，应当经城市规划行政主管部门批准。"},
-    "土地管理法第77条": {"law": "《中华人民共和国土地管理法》", "article": "第七十七条", "content": "未经批准或者采取欺骗手段骗取批准，非法占用土地的，由县级以上人民政府自然资源主管部门责令退还非法占用的土地..."},
-    "土地管理法第75条": {"law": "《中华人民共和国土地管理法》", "article": "第七十五条", "content": "违反本法规定，占用耕地建窑、建坟或者擅自在耕地上建房、挖砂、采石、采矿、取土等，破坏种植条件的..."},
-    "行政处罚法第27条": {"law": "《中华人民共和国行政处罚法》", "article": "第二十七条", "content": "违法行为涉嫌犯罪的，行政机关应当及时将案件移送司法机关，依法追究刑事责任。"},
-    "行政处罚法第54条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十四条", "content": "除本法第五十一条规定的可以当场作出的行政处罚外，行政机关发现公民、法人或者其他组织有依法应当给予行政处罚的行为的，必须全面、客观、公正地调查..."},
-    "行政处罚法第55条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十五条", "content": "执法人员在调查或者进行检查时，应当主动向当事人或者有关人员出示执法证件..."},
-    "行政处罚法第57条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十七条", "content": "调查终结，行政机关负责人应当对调查结果进行审查..."},
-    "行政处罚法第63条": {"law": "《中华人民共和国行政处罚法》", "article": "第六十三条", "content": "行政机关拟作出下列行政处罚决定，应当告知当事人有要求听证的权利..."},
-    "行政强制法第22条": {"law": "《中华人民共和国行政强制法》", "article": "第二十二条", "content": "查封、扣押应当由法律、法规规定的行政机关实施..."},
-    "行政强制法第24条": {"law": "《中华人民共和国行政强制法》", "article": "第二十四条", "content": "行政机关决定实施查封、扣押的，应当履行本法第十八条规定的程序..."},
-    "行政强制法第25条": {"law": "《中华人民共和国行政强制法》", "article": "第二十五条", "content": "查封、扣押的期限不得超过三十日..."},
-    "特区条例第24条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第二十四条", "content": "在案件办理过程中，规划土地监察机构可以向当事人、证人发出调查询问通知书..."},
-    "特区条例第39条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第三十九条", "content": "对涉及规划违法行为或者土地违法行为的房地产，规划土地监察机构可以作出决定，限制其首次登记..."},
+    "土地管理法第77条": {"law": "《中华人民共和国土地管理法》", "article": "第七十七条", "content": "未经批准或者采取欺骗手段骗取批准，非法占用土地的，由县级以上人民政府自然资源主管部门责令退还非法占用的土地，对违反土地利用总体规划擅自将农用地改为建设用地的，限期拆除在非法占用的土地上新建的建筑物和其他设施，恢复土地原状，对符合土地利用总体规划的，没收在非法占用的土地上新建的建筑物和其他设施，可以并处罚款；构成犯罪的，依法追究刑事责任。"},
+    "土地管理法第75条": {"law": "《中华人民共和国土地管理法》", "article": "第七十五条", "content": "违反本法规定，占用耕地建窑、建坟或者擅自在耕地上建房、挖砂、采石、采矿、取土等，破坏种植条件的，或者因开发土地造成土地荒漠化、盐渍化的，由县级以上人民政府自然资源主管部门、农业农村主管部门等按照职责责令限期改正或者治理，可以并处罚款；构成犯罪的，依法追究刑事责任。"},
+    "行政处罚法第27条": {"law": "《中华人民共和国行政处罚法》", "article": "第二十七条", "content": "违法行为涉嫌犯罪的，行政机关应当及时将案件移送司法机关，依法追究刑事责任。对依法不需要追究刑事责任或者免予刑事处罚，但应当给予行政处罚的，司法机关应当及时将案件移送有关行政机关。"},
+    "行政处罚法第44条": {"law": "《中华人民共和国行政处罚法》", "article": "第四十四条", "content": "行政机关在作出行政处罚决定之前，应当告知当事人拟作出的行政处罚内容及事实、理由、依据，并告知当事人依法享有的陈述、申辩、要求听证等权利。"},
+    "行政处罚法第45条": {"law": "《中华人民共和国行政处罚法》", "article": "第四十五条", "content": "当事人有权进行陈述和申辩。行政机关必须充分听取当事人的意见，对当事人提出的事实、理由和证据，应当进行复核；当事人提出的事实、理由或者证据成立的，行政机关应当采纳。行政机关不得因当事人陈述、申辩而给予更重的处罚。"},
+    "行政处罚法第54条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十四条", "content": "除本法第五十一条规定的可以当场作出的行政处罚外，行政机关发现公民、法人或者其他组织有依法应当给予行政处罚的行为的，必须全面、客观、公正地调查，收集有关证据；必要时，依照法律、法规的规定，可以进行检查。符合立案标准的，行政机关应当及时立案。"},
+    "行政处罚法第55条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十五条", "content": "执法人员在调查或者进行检查时，应当主动向当事人或者有关人员出示执法证件。当事人或者有关人员有权要求执法人员出示执法证件。执法人员不出示执法证件的，当事人或者有关人员有权拒绝接受调查或者检查。"},
+    "行政处罚法第57条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十七条", "content": "调查终结，行政机关负责人应当对调查结果进行审查，根据不同情况，分别作出如下决定：（一）确有应受行政处罚的违法行为的，根据情节轻重及具体情况，作出行政处罚决定；（二）违法行为轻微，依法可以不予行政处罚的，不予行政处罚；（三）违法事实不能成立的，不予行政处罚；（四）违法行为涉嫌犯罪的，移送司法机关。"},
+    "行政处罚法第63条": {"law": "《中华人民共和国行政处罚法》", "article": "第六十三条", "content": "行政机关拟作出下列行政处罚决定，应当告知当事人有要求听证的权利，当事人要求听证的，行政机关应当组织听证：（一）较大数额罚款；（二）没收较大数额违法所得、没收较大价值非法财物；（三）降低资质等级、吊销许可证件；（四）责令停产停业、责令关闭、限制从业；（五）其他较重的行政处罚；（六）法律、法规、规章规定的其他情形。"},
+    "行政强制法第22条": {"law": "《中华人民共和国行政强制法》", "article": "第二十二条", "content": "查封、扣押应当由法律、法规规定的行政机关实施，其他任何行政机关或者组织不得实施。"},
+    "行政强制法第24条": {"law": "《中华人民共和国行政强制法》", "article": "第二十四条", "content": "行政机关决定实施查封、扣押的，应当履行本法第十八条规定的程序，制作并当场交付查封、扣押决定书和清单。"},
+    "行政强制法第25条": {"law": "《中华人民共和国行政强制法》", "article": "第二十五条", "content": "查封、扣押的期限不得超过三十日；情况复杂的，经行政机关负责人批准，可以延长，但是延长期限不得超过三十日。法律、行政法规另有规定的除外。"},
+    "行政强制法第44条": {"law": "《中华人民共和国行政强制法》", "article": "第四十四条", "content": "对违法的建筑物、构筑物、设施等需要强制拆除的，应当由行政机关予以公告，限期当事人自行拆除。当事人在法定期限内不申请行政复议或者提起行政诉讼，又不拆除的，行政机关可以依法强制拆除。"},
+    "行政强制法第53条": {"law": "《中华人民共和国行政强制法》", "article": "第五十三条", "content": "当事人在法定期限内不申请行政复议或者提起行政诉讼，又不履行行政决定的，没有行政强制执行权的行政机关可以自期限届满之日起三个月内，依照本章规定申请人民法院强制执行。"},
+    "特区条例第24条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第二十四条", "content": "在案件办理过程中，规划土地监察机构可以向当事人、证人发出调查询问通知书，通知当事人在规定期限内接受调查询问。"},
+    "特区条例第39条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第三十九条", "content": "对涉及规划违法行为或者土地违法行为的房地产，规划土地监察机构可以作出决定，限制其首次登记或者转移、抵押登记。"},
     "特区条例第40条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十条", "content": "规划土地监察机构在查处违法行为过程中，对与违法行为有直接关系的场所、设施或者财物，可以依法实施查封、扣押等行政强制措施。"},
-    "特区条例第43条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十三条", "content": "查封、扣押的期限不得超过三十日..."},
-    "广东省城乡规划条例第86条": {"law": "《广东省城乡规划条例》", "article": "第八十六条第一款", "content": "违反本条例规定，未依法取得有关规划许可证的在建或者建成项目，对无法确定建设单位或者个人的..."}
+    "特区条例第43条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十三条", "content": "查封、扣押的期限不得超过三十日；情况复杂的，经规划土地监察机构负责人批准，可以延长，但是延长期限不得超过三十日。"},
+    "特区条例第44条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十四条", "content": "当事人对行政处罚决定逾期不履行的，规划土地监察机构应当依法催告当事人履行义务。经催告，当事人仍不履行，且未在法定期限内申请行政复议或者提起行政诉讼的，依照下列方式分别处理..."},
+    "广东省听证办法第6条": {"law": "《广东省行政处罚听证程序实施办法》", "article": "第六条", "content": "行政机关作出下列行政处罚决定之前，应当告知当事人有要求举行听证的权利..."},
+    "广东省听证办法第7条": {"law": "《广东省行政处罚听证程序实施办法》", "article": "第七条", "content": "第六条所称较大数额罚款、较大数额违法所得、较大价值非法财物，是指对公民的违法行为处以5000元以上罚款，对法人或者其他组织的违法行为处以10万元以上罚款。"},
+    "广东省城乡规划条例第86条": {"law": "《广东省城乡规划条例》", "article": "第八十六条第一款", "content": "违反本条例规定，未依法取得有关规划许可证的在建或者建成项目，对无法确定建设单位或者个人的，城市、县人民政府城乡规划主管部门应当在报纸等公共媒体和违法建设项目现场予以公告..."}
 }
 
 # ============================================================
-# 二、30项完整情形底层数据
+# 二、30项完整情形
 # ============================================================
 RECYCLED_ITEMS = [
     {"key": "1-1", "name": "对未取得建设工程规划许可证；未按建设工程规划许可证的规定进行建设的行政处罚", "type": "一、街道继续实施至2027年7月1日", "transition": "由街道办事处继续实施至2027年7月1日止。", "discretion_keys": ["规划—未取得规划许可证"]},
@@ -143,7 +149,7 @@ EXTRA_SECTIONS_MAP = {
 DISCRETION_STANDARDS = {
     "规划—未取得规划许可证": {"name": "未取得建设工程规划许可证或未按许可证规定进行建设（《城乡规划法》第64条）", "categories": [{"title": "一、尚可采取改正措施", "items": [{"scene": "超面积≤5% 或超高度≤5%", "standard": "责令停止建设、限期改正；并处建设工程造价5%的罚款"}, {"scene": "超面积5%-10%", "standard": "责令停止建设、限期改正；并处建设工程造价7.5%的罚款"}]}, {"title": "二、无法采取改正措施", "items": [{"scene": "违反强制性技术规定或侵占公共用地", "standard": "责令停止建设；限期拆除；不能拆除的，没收实物，可并处10%以下罚款"}]}]},
     "规划—临时建设": {"name": "未经批准/未按内容临时建设/超期不拆（第66条）", "categories": [{"title": "情节较重", "items": [{"scene": "影响规划实施或超期3个月以上", "standard": "责令限期拆除；可并处临时造价1倍罚款"}]}]},
-    "规划—地下空间": {"name": "违法建设地下建筑物/擅改地下空间（《广东省城乡规划条例》第79条）", "categories": [{"title": "按危害后果", "items": [{"scene": "造成安全隐患", "standard": "责令停止建设，限期改正，并处造价7.5%罚款"}, {"scene": "造成他人人身财产损失", "standard": "责令停止建设，限期改正，并处造价10%罚款"}]}]},
+    "规划—地下空间": {"name": "违法建设地下建筑物/擅改地下空间", "categories": [{"title": "按危害后果", "items": [{"scene": "造成安全隐患", "standard": "责令停止建设，限期改正，并处造价7.5%罚款"}, {"scene": "造成他人人身财产损失", "standard": "责令停止建设，限期改正，并处造价10%罚款"}]}]},
     "土地—破坏耕地种植条件": {"name": "违法占用耕地破坏种植条件（第75条）", "categories": [{"title": "按破坏面积", "items": [{"scene": "破坏永久基本农田以外的耕地5亩以下", "standard": "责令限期改正或治理；可并处耕地开垦费5倍罚款"}, {"scene": "破坏永久基本农田5亩以上", "standard": "责令限期改正或治理；可并处耕地开垦费8-10倍罚款"}]}]},
     "土地—非法占用土地": {"name": "非法占用土地（第77条）", "categories": [{"title": "按占地类型", "items": [{"scene": "占用建设用地", "standard": "责令退还；可并处100-300元/平米罚款"}, {"scene": "占用永久基本农田", "standard": "责令退还，限期拆除新建建筑物；可并处800-1000元/平米罚款"}]}]},
     "土地—拒不交还土地": {"name": "拒不交还土地/期满不归还（第81条）", "categories": [{"title": "按面积", "items": [{"scene": "不涉及永久基本农田面积不足10亩", "standard": "责令交还；处100-300元/平米罚款"}, {"scene": "涉及永久基本农田5亩以上", "standard": "责令交还；处300-500元/平米罚款"}]}]},
@@ -163,189 +169,53 @@ for item in RECYCLED_ITEMS:
         "extra_sections": {"公告调查依据": _extra[0], "移送依据": _extra[1]}
     }
 
-DEFAULT_SECTIONS = {"协助调查通知依据": ["行政处罚法第54条", "行政处罚法第55条"]}
+DEFAULT_SECTIONS = {
+    "协助调查通知依据": ["行政处罚法第54条", "行政处罚法第55条", "特区条例第24条"],
+    "听证依据": ["行政处罚法第63条", "广东省听证办法第6条", "广东省听证办法第7条"],
+    "申诉依据": ["行政处罚法第44条", "行政处罚法第45条"],
+    "查封依据": ["行政强制法第22条", "行政强制法第24条", "特区条例第40条"],
+    "延长查封期限依据": ["行政强制法第25条", "特区条例第43条"],
+    "限制房产权利依据": ["特区条例第39条"],
+    "解除房产权利依据": ["特区条例第39条"],
+    "强制执行依据": ["行政强制法第44条", "行政强制法第53条", "特区条例第44条"]
+}
+
+NO_SEIZURE = {"4-2", "4-5", "4-7", "4-8", "4-9", "4-11", "4-12", "4-13", "4-15", "4-17", "4-18", "4-19"}
+NO_PROP = {"4-2", "4-5", "4-7", "4-8", "4-9", "4-10", "4-11", "4-12", "4-13", "4-15", "4-17", "4-18", "4-19"}
 
 # ============================================================
-# 三、文本切分与引用提取引擎（完美复刻电脑端）
-# ============================================================
-ARTICLE_PATTERN = re.compile(r'第([零一二三四五六七八九十百千万\d]+)条')
-ARTICLE_REF_PATTERN = re.compile(r'第[零一二三四五六七八九十百千万\d]+条(?:第[零一二三四五六七八九十百千万\d]+款)?(?:第[零一二三四五六七八九十百千万\d]+项)?')
-TOP_LEVEL_ITEM_PATTERN = re.compile(r'(?:^|\n)([\s\u3000]*[零一二三四五六七八九十百]+、)')
-
-REF_PREFIXES = ['违反本条例', '违反本例', '违反本法', '违反本规定', '违反本办法', '根据本条例', '根据本例', '根据本法', '根据本规定', '根据本办法', '依照本条例', '依照本法', '依照本规定', '依照本办法', '按照本条例', '按照本法', '按照本规定', '按照本办法', '符合本条例', '依据本条例', '依据本法', '本条例', '本法', '本规定', '本办法', '该条例', '该法', '该规定', '该办法', '违反']
-PARALLEL_REF_PATTERN = re.compile(r'第[零一二三四五六七八九十百千万\d]+条[、,，]$')
-_MOD_PREFIX_WORDS = ['将', '作为', '修改', '删去', '删除', '改为', '增加']
-_MOD_SUFFIX_WORDS = ['修改为', '修改', '删去', '删除', '改为', '作以下', '进行修改']
-_MOD_SUFFIX_STRICT = ['增加一条', '增加一款', '增加一项', '增加规定', '增加以下']
-_SEP_CHARS = set('。！？；，、：:.,;!?"\'《》（）()【】[]{}\n\r\t \u3000')
-
-def strip_whitespace(s):
-    if not isinstance(s, str): return ''
-    return re.sub(r'[\s\u3000]+', '', s)
-
-def is_likely_reference(text, match_start):
-    if match_start < 1: return False
-    prev_char = text[match_start - 1]
-    if prev_char and not prev_char.isspace() and prev_char not in _SEP_CHARS: return True
-    lookbehind = text[max(0, match_start - 60):match_start]
-    lookbehind_stripped = strip_whitespace(lookbehind)
-    for p in REF_PREFIXES:
-        if lookbehind_stripped.endswith(p): return True
-    if PARALLEL_REF_PATTERN.search(lookbehind_stripped): return True
-    if '》' in lookbehind_stripped:
-        last_close = lookbehind_stripped.rfind('》')
-        between = lookbehind_stripped[last_close + 1:]
-        if not any(ch in between for ch in '。！？；，,、'): return True
-    return False
-
-def _looks_like_modification_ref(text, pos):
-    before = strip_whitespace(text[max(0, pos - 8):pos])
-    if any(w in before for w in _MOD_PREFIX_WORDS): return True
-    after = strip_whitespace(text[pos:pos + 40])
-    for w in _MOD_SUFFIX_WORDS:
-        if w in after: return True
-    for w in _MOD_SUFFIX_STRICT:
-        if w in after: return True
-    return False
-
-def _is_inline_article_ref(text, curr_start, prev_end):
-    if prev_end < 0: return False
-    between = text[prev_end:curr_start]
-    return strip_whitespace(between) == ''
-
-def get_segment_boundaries(text):
-    if not isinstance(text, str) or not text: return []
-    boundaries = set()
-    for m in TOP_LEVEL_ITEM_PATTERN.finditer(text): boundaries.add(m.start(1))
-    for m in ARTICLE_PATTERN.finditer(text):
-        if is_likely_reference(text, m.start()): continue
-        if _looks_like_modification_ref(text, m.start()): continue
-        boundaries.add(m.start())
-    return sorted(boundaries)
-
-def split_into_segments(text):
-    if not isinstance(text, str) or not text: return [text] if isinstance(text, str) else []
-    boundaries = get_segment_boundaries(text)
-    if not boundaries: return [text]
-    segments = []
-    if boundaries[0] > 0:
-        head = text[:boundaries[0]]
-        if head.strip(): segments.append(head)
-    for i, b in enumerate(boundaries):
-        end = boundaries[i + 1] if i + 1 < len(boundaries) else len(text)
-        seg = text[b:end]
-        if seg.strip(): segments.append(seg)
-    return segments
-
-def find_article_definitions(text, article_ref, max_results=3):
-    if not isinstance(text, str) or not text or not article_ref: return []
-    m = re.match(r'第([零一二三四五六七八九十百千万\d]+)条', article_ref)
-    if not m: return []
-    target_num_str = m.group(1)
-    
-    all_matches = list(ARTICLE_PATTERN.finditer(text))
-    candidates = [mm for mm in all_matches if not is_likely_reference(text, mm.start()) and not _looks_like_modification_ref(text, mm.start())]
-    article_starts = []
-    prev_end = -1
-    for mm in candidates:
-        if _is_inline_article_ref(text, mm.start(), prev_end): continue
-        article_starts.append(mm)
-        prev_end = mm.end()
-        
-    results = []
-    for i, match in enumerate(article_starts):
-        num_str = match.group(1)
-        if num_str != target_num_str: continue
-        start = match.start()
-        end = article_starts[i + 1].start() if i + 1 < len(article_starts) else len(text)
-        article_text = text[start:end].strip()
-        if article_text:
-            results.append(article_text)
-            if len(results) >= max_results: break
-    return results
-
-def find_referenced_articles_in_hit(text, keyword):
-    if not isinstance(text, str) or not text: return []
-    kw = strip_whitespace(keyword).lower()
-    if not kw: return []
-    segments = split_into_segments(text)
-    refs = []
-    seen_nums = set()
-    for seg in segments:
-        if kw not in strip_whitespace(seg).lower(): continue
-        for rm in ARTICLE_REF_PATTERN.finditer(seg):
-            if not is_likely_reference(seg, rm.start()): continue
-            base_m = re.match(r'第([零一二三四五六七八九十百千万\d]+)条', rm.group(0))
-            if not base_m: continue
-            base_num_str = base_m.group(1)
-            if base_num_str in seen_nums: continue
-            seen_nums.add(base_num_str)
-            refs.append(f"第{base_num_str}条")
-    return refs
-
-def extract_context_blocks_fallback(text, keyword):
-    parts = re.split(r'(。|！|？|；|\n)', text)
-    sentences = []
-    i = 0
-    while i < len(parts):
-        if i + 1 < len(parts) and parts[i + 1] in '。！？；\n':
-            sentences.append((parts[i] + parts[i + 1]).strip())
-            i += 2
-        else:
-            sentences.append(parts[i].strip())
-            i += 1
-    sentences = [s for s in sentences if s]
-    blocks = []
-    kw = keyword.lower()
-    for sent in sentences:
-        if kw in sent.lower():
-            blocks.append(sent)
-    return blocks
-
-def extract_matching_articles(text, keyword, max_items=20):
-    if not isinstance(text, str): return []
-    kw = strip_whitespace(keyword).lower()
-    if not kw: return []
-    segments = split_into_segments(text)
-    if not segments: return extract_context_blocks_fallback(text, keyword)
-    items = []
-    for seg in segments:
-        if kw in strip_whitespace(seg).lower():
-            items.append(seg.strip())
-            if len(items) >= max_items: break
-    if not items: return extract_context_blocks_fallback(text, keyword)
-    return items
-
-# ============================================================
-# 四、安全文本处理、高亮与搜索逻辑
+# 三、文本切分与CSV加载引擎
 # ============================================================
 CSV_DATA = []
-
-def escape_markup(text):
-    if not text: return ""
-    text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-    return text.replace('[', '&#91;').replace(']', '&#93;')
-
-def highlight_text(text, keyword):
-    """绝对安全的关键词高亮：先用不可见字符包裹，再统一转义"""
-    if not keyword or not text: return text
-    # 用特殊标记包住关键词
-    pattern = re.compile(re.escape(keyword), re.IGNORECASE)
-    marked = pattern.sub(f"__HL_START__{keyword}__HL_END__", text)
-    
-    # 统一转义特殊字符
-    safe_text = escape_markup(marked)
-    
-    # 替换标记为 Kivy 颜色标签
-    safe_text = safe_text.replace("__HL_START__", "[color=#d93025][b]")
-    safe_text = safe_text.replace("__HL_END__", "[/b][/color]")
-    
-    return safe_text
+CSV_HEADERS = []
 
 def clean_html(text):
     if not text: return ""
     text = re.sub(r'<[^>]+>', '', text)
     return text.replace('&nbsp;', ' ').strip()
+
+def splitIntoSegments(text):
+    if not text: return []
+    pattern = re.compile(r'第[零一二三四五六七八九十百千万\d]+条')
+    starts = [m.start() for m in pattern.finditer(text)]
+    if not starts: return [text]
+    segments = []
+    if starts[0] > 0: segments.append(text[:starts[0]])
+    for i in range(len(starts)):
+        end = starts[i+1] if i+1 < len(starts) else len(text)
+        segments.append(text[starts[i]:end])
+    return segments
+
+def extractContextBlocks(text, kw):
+    blocks = []
+    segs = splitIntoSegments(text)
+    for seg in segs:
+        if kw in seg: blocks.append(seg.strip())
+    if not blocks: 
+        parts = re.split(r'[。！？；\n]', text)
+        for p in parts:
+            if kw in p: blocks.append(p.strip())
+    return blocks
 
 def load_bundled_csv():
     target_file = "laws.csv"
@@ -361,79 +231,77 @@ def load_bundled_csv():
             with open(target_file, "r", encoding=enc, errors="ignore") as f:
                 reader = csv.DictReader(f)
                 if not reader.fieldnames: continue
-                col_map = {}
-                for col in reader.fieldnames:
-                    col_clean = col.strip()
-                    if '序号' in col_clean: col_map['序号'] = col
-                    elif '网址' in col_clean: col_map['网址'] = col
-                    elif '名称' in col_clean and '名称' not in col_map: col_map['名称'] = col
-                    elif '发布日期' in col_clean: col_map['发布日期'] = col
-                    elif '文号' in col_clean: col_map['文号'] = col
-                    elif '正文' in col_clean or '内容' in col_clean: col_map['正文'] = col
-                
-                if '正文' not in col_map: continue
-
+                global CSV_HEADERS
+                CSV_HEADERS = [h.strip() for h in reader.fieldnames]
                 count = 0
                 CSV_DATA.clear()
                 for row in reader:
-                    body = clean_html(row.get(col_map['正文'], ''))
-                    if not body: continue
-                    CSV_DATA.append({
-                        '序号': row.get(col_map.get('序号', ''), '').strip(),
-                        '名称': row.get(col_map.get('名称', ''), '').strip(),
-                        '文号': row.get(col_map.get('文号', ''), '').strip(),
-                        '发布日期': row.get(col_map.get('发布日期', ''), '').strip(),
-                        '网址': row.get(col_map.get('网址', ''), '').strip(),
-                        '正文': body
-                    })
-                    count += 1
+                    clean_row = {k.strip(): clean_html(v) for k, v in row.items() if k and v}
+                    if clean_row: CSV_DATA.append(clean_row); count += 1
                 return count, f"OK ({enc})"
         except Exception: continue
     return 0, "解析失败"
 
 def get_provision(key):
     if key in LEGAL_PROVISIONS: return LEGAL_PROVISIONS[key]
-    return {"law": key, "article": "", "content": "（原文请使用搜索功能查法规库）"}
+    return {"law": key, "article": "", "content": "（原文请在搜索框检索）"}
 
-def build_report_text(situation_key, keyword=""):
-    sit = SITUATIONS.get(situation_key)
+# ============================================================
+# 四、逻辑查询与拼装
+# ============================================================
+def query_situation_text(key):
+    sit = SITUATIONS.get(key)
     if not sit: return "未找到该情形。"
     
-    lines = [f"【情形编号】{situation_key}", f"【情形名称】{sit['name']}", f"【所属分类】{sit['type']}", f"【过渡期建议】{sit['transition']}\n"]
+    lines = [f"【情形编号】{key}", f"【情形名称】{sit['name']}", f"【所属分类】{sit['type']}", f"【过渡期建议】{sit['transition']}\n"]
     
-    ann = sit["extra_sections"].get("公告调查依据", [])
-    if ann:
+    if sit["extra_sections"].get("公告调查依据"):
         lines.append("【公告调查依据】")
-        for k in ann:
-            if k.startswith("（"): lines.append("  " + k)
+        for k in sit["extra_sections"]["公告调查依据"]:
+            if k.startswith("（"): lines.append(f"  {k}")
             else:
                 p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
         lines.append("")
 
-    lines.append("【协助调查通知依据】")
-    for k in DEFAULT_SECTIONS["协助调查通知依据"]:
-        p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
-    lines.append("")
-
-    lines.append("【处罚理由】")
-    for k in sit["legal_sections"].get("处罚理由", []):
-        if k.startswith("（"): lines.append("  " + k); continue
-        p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
-    lines.append("")
-
-    lines.append("【处罚依据】")
-    for k in sit["legal_sections"].get("处罚依据", []):
-        p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
-    lines.append("")
-
-    move = sit["extra_sections"].get("移送依据", [])
-    if move:
-        lines.append("【移送依据】")
-        for k in move: 
+    for sec in ["协助调查通知依据", "处罚理由", "处罚依据", "听证依据", "申诉依据"]:
+        lines.append(f"【{sec}】")
+        if sec in ["处罚理由", "处罚依据"]:
+            keys = sit["legal_sections"].get(sec, [])
+        else:
+            keys = DEFAULT_SECTIONS.get(sec, [])
+        for k in keys:
+            if k.startswith("（"): lines.append(f"  {k}"); continue
             p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
         lines.append("")
 
-    lines.append("【裁量标准】")
+    if key not in NO_SEIZURE:
+        for sec in ["查封依据", "延长查封期限依据"]:
+            lines.append(f"【{sec}】")
+            for k in DEFAULT_SECTIONS[sec]:
+                p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
+            lines.append("")
+
+    if key not in NO_PROP:
+        for sec in ["限制房产权利依据", "解除房产权利依据"]:
+            lines.append(f"【{sec}】")
+            for k in DEFAULT_SECTIONS[sec]:
+                p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
+            lines.append("")
+
+    lines.append("【强制执行依据】")
+    for k in DEFAULT_SECTIONS["强制执行依据"]:
+        p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
+    lines.append("")
+
+    if sit["extra_sections"].get("移送依据"):
+        lines.append("【移送依据】")
+        for k in sit["extra_sections"]["移送依据"]: 
+            p = get_provision(k)
+            if "未内置" not in p["content"]: lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
+            else: lines.append(f"  · {k}")
+        lines.append("")
+
+    lines.append("【裁量标准（简略版内置）】")
     for dk in sit.get("discretion_keys", []):
         std = DISCRETION_STANDARDS.get(dk)
         if std:
@@ -443,10 +311,42 @@ def build_report_text(situation_key, keyword=""):
                 for item in cat["items"]:
                     lines.append(f"      - 情形：{item['scene']} -> {item['standard']}")
                     
-    raw_text = "\n".join(lines)
-    return highlight_text(raw_text, keyword)
+    # 【核心联动】：去CSV里把详尽的裁量基准、违法情节挖出来
+    sit_name = sit["name"]
+    match_kws = []
+    if "装饰装修" in sit_name: match_kws = ["装饰装修", "外立面", "搭建"]
+    elif "未取得" in sit_name or "未按" in sit_name: match_kws = ["未取得建设工程规划许可证", "未按照建设工程规划许可证"]
+    elif "非法占用" in sit_name: match_kws = ["非法占用土地"]
+    elif "临时用地" in sit_name: match_kws = ["临时用地"]
+    elif "复垦" in sit_name: match_kws = ["复垦"]
+    else: match_kws = [sit_name[:6]]
+    
+    hit_rows = []
+    for r in CSV_DATA:
+        r_text = "".join([str(v) for v in r.values()])
+        if any(kw in r_text for kw in match_kws):
+            if not any(hr.get("名称") == r.get("名称") and hr.get("违法违规行为") == r.get("违法违规行为") for hr in hit_rows):
+                hit_rows.append(r)
+            
+    if hit_rows:
+        lines.append("\n【裁量标准与违法情节（来自政策库详表）】")
+        for i, r in enumerate(hit_rows[:3]):
+            lines.append(f"◆ 详细记录 {i+1}")
+            for k, v in r.items():
+                if k in ["序号", "名称", "发布日期", "文号", "网址"]: continue
+                if not v: continue
+                if len(v) > 50 and "第" in v and "条" in v:
+                    blocks = splitIntoSegments(v)
+                    lines.append(f"  {k}：")
+                    for b in blocks:
+                        lines.append(f"    {b}")
+                else:
+                    lines.append(f"  {k}：{v}")
+            lines.append("")
+            
+    return "\n".join(lines)
 
-def search_all(keyword):
+def search_all_text(keyword):
     kw = keyword.strip()
     if not kw: return "请输入关键词。"
     raw_results = []
@@ -455,57 +355,32 @@ def search_all(keyword):
         if kw in k or kw in v['content']:
             raw_results.append(f"📄【内置法条】{v['law']}{v['article']}\n{v['content']}\n")
             
-    kw_stripped = strip_whitespace(kw).lower()
     for row in CSV_DATA:
-        name = row.get('名称', '')
-        doc_no = row.get('文号', '')
-        content = row.get('正文', '')
-        
-        if kw_stripped in strip_whitespace(name).lower() or kw_stripped in strip_whitespace(doc_no).lower() or kw_stripped in strip_whitespace(content).lower():
-            # 提取整段！而不是被切断的句子
-            blocks = extract_matching_articles(content, kw)
-            if not blocks:
-                continue
-                
-            refs = find_referenced_articles_in_hit(content, kw)
-            ref_contents = []
-            for ref in refs:
-                contents = find_article_definitions(content, ref, max_results=3)
-                if contents:
-                    ref_contents.append({'ref': ref, 'contents': [{'content': c} for c in contents]})
-            
+        row_text = "".join([str(v) for v in row.values()])
+        if kw in row_text:
             text = ""
-            if row.get('序号'): text += f"序号：{row['序号']}　"
-            if name: text += f"名称：{name}　"
-            if doc_no: text += f"文号：{doc_no}　"
-            if row.get('发布日期'): text += f"发布日期：{row['发布日期']}\n"
-            if row.get('网址'): text += f"网址：{row['网址']}\n"
-            
-            for i, b in enumerate(blocks):
-                text += f"  {i+1}. {b}\n"
-                
-            if ref_contents:
-                text += "【引用条款内容】\n"
-                for r in ref_contents:
-                    text += f"▶ {r['ref']}\n"
-                    for c in r['contents']:
-                        text += f"{c['content']}\n"
-            
+            for k, v in row.items():
+                if not v: continue
+                if kw in v and len(v) > 50:
+                    blocks = extractContextBlocks(v, kw)
+                    if blocks:
+                        text += f"{k}：\n"
+                        for b in blocks: text += f"  {b}\n"
+                    else:
+                        text += f"{k}：{v}\n"
+                else:
+                    text += f"{k}：{v}\n"
             raw_results.append(text + "\n")
 
     if not raw_results:
-        return f"未找到包含「{kw}」的法条或政策文件。"
-    
-    limit = 50
-    final_text = f"【搜索关键词】{kw} (共匹配 {len(raw_results)} 条)\n\n"
-    final_text += "\n".join(raw_results[:limit])
-    if len(raw_results) > limit:
-        final_text += f"\n\n... (仅显示前{limit}条)"
+        return f"未找到包含「{kw}」的内容。"
         
-    return highlight_text(final_text, keyword)
+    final_text = f"【搜索关键词】{kw} (共匹配 {len(raw_results)} 条)\n\n"
+    final_text += "\n".join(raw_results[:50])
+    return final_text
 
 # ============================================================
-# 五、UI 界面
+# 五、UI 界面 (纯 TextInput，绝对稳定)
 # ============================================================
 class MainScreen(BoxLayout):
     def __init__(self, **kwargs):
@@ -529,78 +404,43 @@ class MainScreen(BoxLayout):
 
         row3 = BoxLayout(size_hint_y=None, height=dp(48), spacing=dp(8))
         b1 = Button(text="查询该情形", background_color=(0.2, 0.8, 0.2, 1)); b1.bind(on_release=self.on_query_situation)
-        b2 = Button(text="一键复制全部", background_color=(0.8, 0.5, 0.2, 1)); b2.bind(on_release=self.on_copy_result)
+        b2 = Button(text="复制全部", background_color=(0.8, 0.5, 0.2, 1)); b2.bind(on_release=self.on_copy_result)
         row3.add_widget(b1)
         row3.add_widget(b2)
         self.add_widget(row3)
 
-        self.scroll = ScrollView(size_hint=(1, 1))
-        self.result_label = Label(text="正在初始化数据，请稍候...", size_hint_y=None, markup=True, halign="left", valign="top", color=(0, 0, 0, 1))
-        self.result_label.bind(texture_size=self._update_label_height)
-        self.result_label.text_size = (Window.width - dp(40), None)
-        Window.bind(size=self._on_window_size)
-        self.scroll.add_widget(self.result_label)
-        self.add_widget(self.scroll)
-        
-        self.current_raw_text = "" 
-
-    def _update_label_height(self, *args):
-        self.result_label.height = self.result_label.texture_size[1] + dp(20)
-
-    def _on_window_size(self, *args):
-        self.result_label.text_size = (Window.width - dp(40), None)
-        self._update_label_height()
-
-    def show_text(self, txt, raw_txt):
-        self.result_label.text = txt
-        self.current_raw_text = raw_txt
-        self.result_label.texture_update()
-        self.result_label.height = self.result_label.texture_size[1] + dp(20)
-        self.scroll.scroll_y = 1
+        self.result_display = TextInput(
+            text="正在初始化数据...",
+            readonly=True,
+            foreground_color=(0, 0, 0, 1),
+            background_color=(1, 1, 1, 1),
+            font_size=dp(15),
+            size_hint=(1, 1)
+        )
+        self.add_widget(self.result_display)
 
     def on_query_situation(self, *args):
         sel = self.spinner.text
         if "｜" not in sel: return
-        kw = self.search_input.text.strip()
         key = sel.split("｜", 1)[0]
-        
-        # 纯文本用于复制（无格式）
-        sit = SITUATIONS.get(key)
-        raw_lines = [f"【情形编号】{key}", f"【情形名称】{sit['name']}"]
-        for k in sit["legal_sections"].get("处罚理由", []):
-            p = get_provision(k); raw_lines.append(f"· {p['law']}{p['article']}：{p['content']}")
-        self.current_raw_text = "\n".join(raw_lines)
-        
-        # 带高亮的富文本用于显示
-        highlighted = build_report_text(key, kw)
-        self.result_label.text = highlighted
-        self.result_label.texture_update()
-        self.result_label.height = self.result_label.texture_size[1] + dp(20)
-        self.scroll.scroll_y = 1
+        self.result_display.text = query_situation_text(key)
 
     def on_search(self, *args):
         kw = self.search_input.text.strip()
         if not kw: return
-        
-        # 获取纯文本用于复制（移除高亮标签）
-        raw_text = search_all(kw).replace("[color=#d93025][b]", "").replace("[/b][/color]", "")
-        # 获取带高亮的富文本用于显示
-        display_text = search_all(kw)
-        
-        self.show_text(display_text, raw_text)
+        self.result_display.text = search_all_text(kw)
 
     def on_copy_result(self, *args):
-        Clipboard.copy(self.current_raw_text)
-        self.result_label.text = "[color=#008000][b]✅ 已复制到剪贴板！[/b][/color]\n\n" + self.result_label.text
-        self.current_raw_text = "✅ 已复制到剪贴板！\n\n" + self.current_raw_text
+        Clipboard.copy(self.result_display.text)
+        self.result_display.text = "✅ 已复制到剪贴板！\n\n" + self.result_display.text[:100] + "..."
 
 class LawApp(App):
     def build(self):
         Window.clearcolor = (0.95, 0.95, 0.95, 1)
         def init_load(dt):
             count, status = load_bundled_csv()
-            msg = f"系统初始化完成！\n已加载 {len(SITUATIONS)} 项完整执法情形。\nCSV数据加载状态：{status}\n共加载 {count} 条政策法规数据。\n\n请在上方选择情形或输入关键词搜索。"
-            self.root.show_text(msg, msg)
+            msg = f"系统初始化完成！\n已加载 {len(SITUATIONS)} 项完整情形。\nCSV状态：{status}，共 {count} 条。\n\n如果CSV为0条，请检查文件是否上传。"
+            self.root.result_display.text = msg
         Clock.schedule_once(init_load, 0.5)
         return MainScreen()
 
