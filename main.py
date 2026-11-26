@@ -32,7 +32,7 @@ def load_chinese_font():
 load_chinese_font()
 
 # ============================================================
-# 一、法律依据核心库 (内置)
+# 一、法律依据核心库 (全量内置，彻底解决只显示名称的问题)
 # ============================================================
 LEGAL_PROVISIONS = {
     "城乡规划法第40条": {"law": "《中华人民共和国城乡规划法》", "article": "第四十条第一款", "content": "在城市、镇规划区内进行建筑物、构筑物、道路、管线和其他工程建设的，建设单位或者个人应当向城市、县人民政府城乡规划主管部门或者省、自治区、直辖市人民政府确定的镇人民政府申请办理建设工程规划许可证。"},
@@ -43,6 +43,15 @@ LEGAL_PROVISIONS = {
     "行政处罚法第27条": {"law": "《中华人民共和国行政处罚法》", "article": "第二十七条", "content": "违法行为涉嫌犯罪的，行政机关应当及时将案件移送司法机关，依法追究刑事责任。对依法不需要追究刑事责任或者免予刑事处罚，但应当给予行政处罚的，司法机关应当及时将案件移送有关行政机关。"},
     "行政处罚法第54条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十四条", "content": "除本法第五十一条规定的可以当场作出的行政处罚外，行政机关发现公民、法人或者其他组织有依法应当给予行政处罚的行为的，必须全面、客观、公正地调查，收集有关证据；必要时，依照法律、法规的规定，可以进行检查。符合立案标准的，行政机关应当及时立案。"},
     "行政处罚法第55条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十五条", "content": "执法人员在调查或者进行检查时，应当主动向当事人或者有关人员出示执法证件。当事人或者有关人员有权要求执法人员出示执法证件。执法人员不出示执法证件的，当事人或者有关人员有权拒绝接受调查或者检查。"},
+    "行政处罚法第57条": {"law": "《中华人民共和国行政处罚法》", "article": "第五十七条", "content": "调查终结，行政机关负责人应当对调查结果进行审查，根据不同情况，分别作出如下决定：（一）确有应受行政处罚的违法行为的，根据情节轻重及具体情况，作出行政处罚决定；（二）违法行为轻微，依法可以不予行政处罚的，不予行政处罚；（三）违法事实不能成立的，不予行政处罚；（四）违法行为涉嫌犯罪的，移送司法机关。"},
+    "行政处罚法第63条": {"law": "《中华人民共和国行政处罚法》", "article": "第六十三条", "content": "行政机关拟作出下列行政处罚决定，应当告知当事人有要求听证的权利，当事人要求听证的，行政机关应当组织听证：（一）较大数额罚款；（二）没收较大数额违法所得、没收较大价值非法财物；（三）降低资质等级、吊销许可证件；（四）责令停产停业、责令关闭、限制从业；（五）其他较重的行政处罚；（六）法律、法规、规章规定的其他情形。"},
+    "行政强制法第22条": {"law": "《中华人民共和国行政强制法》", "article": "第二十二条", "content": "查封、扣押应当由法律、法规规定的行政机关实施，其他任何行政机关或者组织不得实施。"},
+    "行政强制法第24条": {"law": "《中华人民共和国行政强制法》", "article": "第二十四条", "content": "行政机关决定实施查封、扣押的，应当履行本法第十八条规定的程序，制作并当场交付查封、扣押决定书和清单。"},
+    "行政强制法第25条": {"law": "《中华人民共和国行政强制法》", "article": "第二十五条", "content": "查封、扣押的期限不得超过三十日；情况复杂的，经行政机关负责人批准，可以延长，但是延长期限不得超过三十日。"},
+    "特区条例第24条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第二十四条", "content": "在案件办理过程中，规划土地监察机构可以向当事人、证人发出调查询问通知书，通知当事人在规定期限内接受调查询问。"},
+    "特区条例第39条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第三十九条", "content": "对涉及规划违法行为或者土地违法行为的房地产，规划土地监察机构可以作出决定，限制其首次登记或者转移、抵押登记。"},
+    "特区条例第40条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十条", "content": "规划土地监察机构在查处违法行为过程中，对与违法行为有直接关系的场所、设施或者财物，可以依法实施查封、扣押等行政强制措施。"},
+    "特区条例第43条": {"law": "《深圳经济特区规划土地监察条例》", "article": "第四十三条", "content": "查封、扣押的期限不得超过三十日；情况复杂的，经规划土地监察机构负责人批准，可以延长，但是延长期限不得超过三十日。"},
     "广东省城乡规划条例第86条": {"law": "《广东省城乡规划条例》", "article": "第八十六条第一款", "content": "违反本条例规定，未依法取得有关规划许可证的在建或者建成项目，对无法确定建设单位或者个人的，城市、县人民政府城乡规划主管部门应当在报纸等公共媒体和违法建设项目现场予以公告，告知建设单位或者个人依法接受处理，公告期限不少于三十日。"},
 }
 
@@ -160,21 +169,20 @@ DEFAULT_SECTIONS = {
 # ============================================================
 CSV_DATA = []
 
+def clean_html(text):
+    """清理可能存在的HTML标签"""
+    if not text: return ""
+    text = re.sub(r'<[^>]+>', '', text)
+    return text.replace('&nbsp;', ' ').strip()
+
 def load_bundled_csv():
-    """增强型加载：支持多编码、模糊列名识别、安卓打包路径"""
-    # 1. 定位文件
     target_file = "laws.csv"
     if not os.path.exists(target_file):
-        # 尝试在安卓内部打包路径找
         found = resource_find("laws.csv")
-        if found:
-            target_file = found
-        else:
-            target_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "laws.csv")
-            
+        if found: target_file = found
+        else: target_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "laws.csv")
     if not os.path.exists(target_file): return 0, "未找到 laws.csv 文件"
 
-    # 2. 多编码尝试
     encodings = ['utf-8-sig', 'utf-8', 'gbk', 'gb18030']
     for enc in encodings:
         try:
@@ -182,7 +190,6 @@ def load_bundled_csv():
                 reader = csv.DictReader(f)
                 if not reader.fieldnames: continue
                 
-                # 3. 智能识别列名（复刻 Windows 逻辑）
                 col_map = {}
                 for col in reader.fieldnames:
                     col_clean = col.strip()
@@ -196,13 +203,12 @@ def load_bundled_csv():
                     elif '发布机构' in col_clean: col_map['发布机构'] = col
                     elif '正文' in col_clean or '内容' in col_clean: col_map['正文'] = col
                 
-                if '正文' not in col_map:
-                    continue  # 如果没找到正文列，尝试下一种编码
+                if '正文' not in col_map: continue
 
                 count = 0
                 CSV_DATA.clear()
                 for row in reader:
-                    body = row.get(col_map['正文'], '').strip() if col_map.get('正文') else ''
+                    body = clean_html(row.get(col_map['正文'], ''))
                     if not body: continue
                     
                     clean_row = {
@@ -216,14 +222,21 @@ def load_bundled_csv():
                     CSV_DATA.append(clean_row)
                     count += 1
                 return count, f"OK ({enc})"
-        except Exception as e:
-            print(f"CSV解析尝试 {enc} 失败:", e)
+        except Exception:
             continue
-            
-    return 0, "文件存在，但解析失败，请检查表头是否包含'正文'"
+    return 0, "文件存在，但解析失败"
 
 def get_provision(key):
-    return LEGAL_PROVISIONS.get(key, {"law": key, "article": "", "content": "（原文请使用搜索功能查法规库）"})
+    """尝试从内置库获取，如果取不到，尝试从 CSV 库里捞取原文"""
+    if key in LEGAL_PROVISIONS:
+        return LEGAL_PROVISIONS[key]
+    
+    # 如果内置库没有，尝试动态从 CSV 找
+    for row in CSV_DATA:
+        if key in row['名称']:
+            return {"law": row['名称'], "article": "", "content": row['正文'][:500] + "..."}
+    
+    return {"law": key, "article": "", "content": "（原文未找到，请在搜索框输入该法规名称进行详细检索）"}
 
 def build_report_text(situation_key):
     sit = SITUATIONS.get(situation_key)
@@ -236,28 +249,35 @@ def build_report_text(situation_key):
         for k in ann:
             if k.startswith("（"): lines.append("  " + k)
             else:
-                p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
+                p = get_provision(k)
+                lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
         lines.append("")
 
     lines.append("【协助调查通知依据】")
-    for k in DEFAULT_SECTIONS["协助调查通知依据"]: lines.append(f"  · {k}")
+    for k in DEFAULT_SECTIONS["协助调查通知依据"]:
+        p = get_provision(k)
+        lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
     lines.append("")
 
     lines.append("【处罚理由】")
     for k in sit["legal_sections"].get("处罚理由", []):
         if k.startswith("（"): lines.append("  " + k); continue
-        p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
+        p = get_provision(k)
+        lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
     lines.append("")
 
     lines.append("【处罚依据】")
     for k in sit["legal_sections"].get("处罚依据", []):
-        p = get_provision(k); lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
+        p = get_provision(k)
+        lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
     lines.append("")
 
     move = sit["extra_sections"].get("移送依据", [])
     if move:
         lines.append("【移送依据】")
-        for k in move: lines.append(f"  · {k}")
+        for k in move: 
+            p = get_provision(k)
+            lines.append(f"  · {p['law']}{p['article']}：{p['content']}")
         lines.append("")
 
     lines.append("【裁量标准】")
@@ -271,39 +291,71 @@ def build_report_text(situation_key):
                     lines.append(f"      - 情形：{item['scene']} -> {item['standard']}")
     return "\n".join(lines)
 
+# ============================================================
+# 完美复刻 Windows 端上下文句子截取
+# ============================================================
+def extract_context_blocks(text, keyword):
+    parts = re.split(r'(。|！|？|；|\n)', text)
+    sentences = []
+    i = 0
+    while i < len(parts):
+        if i + 1 < len(parts) and parts[i + 1] in '。！？；\n':
+            sentences.append((parts[i] + parts[i + 1]).strip())
+            i += 2
+        else:
+            sentences.append(parts[i].strip())
+            i += 1
+    sentences = [s for s in sentences if s]
+
+    blocks = []
+    i = 0
+    kw = keyword.lower()
+    while i < len(sentences):
+        sent = sentences[i]
+        if kw in sent.lower():
+            # 判断如果是冒号结尾，把后面的列表也带上
+            if sent.rstrip().endswith('：'):
+                block = sent
+                j = i + 1
+                while j < len(sentences) and not re.search(r'(第[零一二三四五六七八九十百\d]+条)', sentences[j]):
+                    block += sentences[j]
+                    j += 1
+                blocks.append(block)
+                i = j
+            else:
+                blocks.append(sent)
+                i += 1
+        else:
+            i += 1
+    return blocks
+
 def search_all(keyword):
-    """深度搜索：包含上下文截取，完美复刻电脑版体验"""
     kw = keyword.strip()
     if not kw: return "请输入关键词。"
     results = []
     
-    # 1. 内置法条
+    # 1. 搜内置法条
     for k, v in LEGAL_PROVISIONS.items():
         if kw in k or kw in v['content']:
-            results.append(f"【内置法条】{v['law']}{v['article']}\n{v['content']}\n")
+            results.append(f"📄【内置法条】{v['law']}{v['article']}\n{v['content']}\n")
             
-    # 2. CSV 政策库（带上下文截取）
+    # 2. 搜 CSV 数据库（使用句子提取）
     for row in CSV_DATA:
         name = row.get('名称', '')
         doc_no = row.get('文号', '')
         content = row.get('正文', '')
         
         if kw in name or kw in doc_no or kw in content:
-            snippet = ""
-            if kw in content:
-                idx = content.find(kw)
-                # 智能截取关键词前后的文本（类似 Windows 提取上下文）
-                start_idx = max(0, idx - 60)
-                end_idx = min(len(content), idx + 80)
-                snippet = content[start_idx:end_idx].replace('\n', ' ')
-                snippet = "..." + snippet + "..."
+            blocks = extract_context_blocks(content, kw) if kw in content else []
             
             text = f"📄【{name}】\n"
             if doc_no: text += f"文号：{doc_no}\n"
             if row.get('发布日期'): text += f"发布日期：{row['发布日期']}\n"
             if row.get('发布机构'): text += f"发布机构：{row['发布机构']}\n"
-            if snippet: text += f"命中片段：{snippet}\n"
-            results.append(text)
+            
+            if blocks:
+                text += "命中原文：\n" + "\n".join(blocks)
+            results.append(text + "\n")
             
     if not results:
         return f"未找到包含「{kw}」的法条或政策文件。"
@@ -312,7 +364,7 @@ def search_all(keyword):
     res_text = f"【搜索关键词】{kw} (共匹配 {len(results)} 条)\n\n"
     res_text += "\n".join(results[:limit])
     if len(results) > limit:
-        res_text += f"\n\n... (由于篇幅限制，仅显示前{limit}条)"
+        res_text += f"\n\n... (仅显示前{limit}条)"
     return res_text
 
 # ============================================================
@@ -383,7 +435,7 @@ class LawApp(App):
         Window.clearcolor = (0.95, 0.95, 0.95, 1)
         def init_load(dt):
             count, status = load_bundled_csv()
-            msg = f"系统初始化完成！\n已加载 30 项执法情形。\nCSV数据加载状态：{status}\n共加载 {count} 条政策法规数据。\n\n如果CSV显示0条，请检查：\n1. laws.csv是否已上传到仓库。\n2. 表格是否包含“名称”、“正文”表头。"
+            msg = f"系统初始化完成！\n已加载 30 项执法情形。\nCSV数据加载状态：{status}\n共加载 {count} 条政策法规数据。"
             self.root.show_text(msg)
         Clock.schedule_once(init_load, 0.5)
         return MainScreen()
