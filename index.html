@@ -215,6 +215,7 @@ function extractContextBlocks(text, kw) {
     return blocks;
 }
 
+// 【核心修复 2】查询情形时，自动联动 CSV 里的详尽裁量标准
 function querySituation() {
     const k = document.getElementById('situationSelect').value; if(!k) return updateResult("请选择执法事项");
     const s = SIT[k]; 
@@ -242,11 +243,53 @@ function querySituation() {
 
     if(s.es.m){ txt+="【移送依据】\n"; s.es.m.forEach(x=>{ let p=getP(x); if(!p.c.includes("未内置")) txt+=`  · ${p.l}${p.a}：${p.c}\n`; else txt+=`  · ${x}\n`; }); txt+="\n"; }
     
-    txt+="【裁量标准】\n"; s.d.forEach(x=>{ let st=DS[x]; if(st){ txt+=`  ◆ ${st.n}\n`; st.c.forEach(cc=>{ txt+=`    ● ${cc.t}\n`; cc.i.forEach(ii=>{ txt+=`      - 情形：${ii.s} -> ${ii.st}\n`; }); }); } });
+    // 内置的简略版裁量
+    txt+="【裁量标准（简略版）】\n"; s.d.forEach(x=>{ let st=DS[x]; if(st){ txt+=`  ◆ ${st.n}\n`; st.c.forEach(cc=>{ txt+=`    ● ${cc.t}\n`; cc.i.forEach(ii=>{ txt+=`      - 情形：${ii.s} -> ${ii.st}\n`; }); }); } });
+
+    // 【核心】尝试从 CSV 中寻找该情形的详细裁量基准
+    let matchKws = [];
+    if (s.n.includes("装饰装修")) matchKws = ["装饰装修", "外立面", "搭建"];
+    else if (s.n.includes("未取得") || s.n.includes("未按")) matchKws = ["未取得建设工程规划许可证", "未按照建设工程规划许可证"];
+    else if (s.n.includes("非法占用")) matchKws = ["非法占用土地"];
+    else if (s.n.includes("临时用地")) matchKws = ["临时用地"];
+    else if (s.n.includes("复垦")) matchKws = ["复垦"];
+    else matchKws = [s.n.substring(0, 6)];
+
+    let csvHits = [];
+    CSV_DATA.forEach(r => {
+        let allText = Object.values(r).join(" ");
+        if (matchKws.some(kw => allText.includes(kw))) {
+            // 去重
+            if(!csvHits.some(hr => hr["名称"] === r["名称"] || hr["违法违规行为"] === r["违法违规行为"])) {
+                csvHits.push(r);
+            }
+        }
+    });
+
+    if (csvHits.length > 0) {
+        txt += "\n【来自政策库的详尽裁量基准与情节】\n";
+        csvHits.slice(0, 3).forEach((r, idx) => { 
+            txt += `◆ 详细记录 ${idx+1}\n`;
+            for (let key in r) {
+                let val = r[key];
+                if(!val || ["序号", "名称", "发布日期", "文号", "网址"].includes(key)) continue;
+                // 对长文本按“第X条”分段
+                if (val.length > 50 && val.includes("第") && val.includes("条")) {
+                    let blocks = splitIntoSegments(val);
+                    txt += `${key}：\n`;
+                    blocks.forEach(b => { txt += `  ${b}\n`; });
+                } else {
+                    txt += `${key}：${val}\n`;
+                }
+            }
+            txt += "\n";
+        });
+    }
+
     updateResult(txt);
 }
 
-// 【核心修复 2】全面输出 CSV 的所有列
+// 【核心修复 3】全面输出 CSV 的所有列
 function searchAll() {
     const kw = document.getElementById('keywordInput').value.trim(); if(!kw) return;
     let res = [];
@@ -271,12 +314,10 @@ function searchAll() {
         
         if(rowHit) {
             let text = "";
-            // 遍历该行的所有列
             for(let k in r) {
                 let val = r[k];
                 if(!val) continue;
                 
-                // 如果是命中的列，且内容很长（比如正文、情节、依据），提取完整段落
                 if(hitKeys.includes(k) && val.length > 50) {
                     let blocks = extractContextBlocks(val, kw);
                     if(blocks.length > 0) {
